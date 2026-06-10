@@ -9,6 +9,9 @@
 <meta name="application-name" content="NutriCore">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@0.383.0/dist/umd/lucide.min.js"></script>
@@ -492,7 +495,15 @@ const DEFAULT_NUTRIENT_TARGETS={
 const DAY_TYPES={
  rest:{label:'Rest Day',color:'#6BCB77'},
  training:{label:'Training Day',color:'#7C6FF7'},
- cardio:{label:'Cardio Day',color:'#4ECDC4'}
+ cardio:{label:'Cardio Day',color:'#4ECDC4'},
+ both:{label:'Training + Cardio',color:'#FF9A56'}
+};
+const ACTIVITY_INFO={
+ sedentary:'Sedentary — desk job, little or no exercise (×1.2)',
+ light:'Lightly Active — light exercise 1–3 days/week (×1.375)',
+ moderate:'Moderately Active — moderate exercise 3–5 days/week (×1.55)',
+ very:'Very Active — hard exercise 6–7 days/week (×1.725)',
+ extreme:'Extremely Active — twice-daily training or physical job (×1.9)'
 };
 const DEFAULT_MEAL_TYPES=[
  {id:'breakfast',name:'Breakfast',color:'#FFD166',start:'06:00',end:'10:00'},
@@ -719,12 +730,16 @@ function calcTargetCals(p){
   return tdee;
 }
 function defaultDayTargets(p){
-  const cals=Math.round(calcTargetCals(p));
+  const base=Math.round(calcTargetCals(p));
   const prot=Math.round((+p.weightKg||75)*2);
-  const fat=Math.round(cals*0.25/9);
-  const carbs=Math.max(0,Math.round((cals-prot*4-fat*9)/4));
-  const mk=()=>({calories:cals,protein:prot,carbs:carbs,fat:fat});
-  return {rest:mk(),training:mk(),cardio:mk()};
+  const mk=mult=>{
+    const cals=Math.round(base*mult);
+    const fat=Math.round(cals*0.25/9);
+    const carbs=Math.max(0,Math.round((cals-prot*4-fat*9)/4));
+    return {calories:cals,protein:prot,carbs:carbs,fat:fat};
+  };
+  /* Rest days eat below baseline; training/cardio days scale up — all editable in Settings. */
+  return {rest:mk(0.93),training:mk(1.05),cardio:mk(1.0),both:mk(1.10)};
 }
 function dayTypeFor(date){
   if(settings.dayOverrides&&settings.dayOverrides[date])return settings.dayOverrides[date];
@@ -734,6 +749,8 @@ function dayTypeFor(date){
 function macroTargetsFor(date){
   const dt=dayTypeFor(date);
   if(targetsByType&&targetsByType[dt])return targetsByType[dt];
+  if(targetsByType&&dt==='both'&&targetsByType.training)return targetsByType.training;
+  if(profile)return defaultDayTargets(profile)[dt]||defaultDayTargets(profile).training;
   return {calories:2200,protein:150,carbs:230,fat:70};
 }
 async function workoutBurn(date){
@@ -993,7 +1010,7 @@ function initTopbar(){
     else pop.hidden=true;
   });
   $('#dayTypeBadge').addEventListener('click',async()=>{
-    const order=['rest','training','cardio'];
+    const order=Object.keys(DAY_TYPES);
     const cur=dayTypeFor(S.date);
     const next=order[(order.indexOf(cur)+1)%order.length];
     settings.dayOverrides=settings.dayOverrides||{};
@@ -2292,11 +2309,8 @@ async function renderSettings(){
       <div class="fcol"><label>Height (cm)</label><input type="number" id="pHeight" value="${p.heightCm||''}"></div>
       <div class="fcol"><label>Weight (kg)</label><input type="number" step="0.1" id="pWeight" value="${p.weightKg||''}"></div>
       <div class="fcol"><label>Activity Level</label><select id="pAct">
-        <option value="sedentary" ${p.activity==='sedentary'?'selected':''}>Sedentary (×1.2)</option>
-        <option value="light" ${p.activity==='light'?'selected':''}>Lightly Active (×1.375)</option>
-        <option value="moderate" ${p.activity==='moderate'?'selected':''}>Moderately Active (×1.55)</option>
-        <option value="very" ${p.activity==='very'?'selected':''}>Very Active (×1.725)</option>
-        <option value="extreme" ${p.activity==='extreme'?'selected':''}>Extremely Active (×1.9)</option></select></div>
+        ${Object.entries(ACTIVITY_INFO).map(([k,v])=>`<option value="${k}" ${p.activity===k?'selected':''}>${v}</option>`).join('')}</select>
+        <span class="tiny" id="actHint">${ACTIVITY_INFO[p.activity]||''}</span></div>
     </div>
     <div class="frow">
       <div class="fcol"><label>Goal</label><select id="pGoal">
@@ -2414,6 +2428,7 @@ async function renderSettings(){
   ['#pName','#pDob','#pSex','#pHeight','#pWeight','#pAct','#pGoal','#pRate'].forEach(s=>{
     const el=$(s);if(el)el.addEventListener('input',()=>{
       $('#rateWrap').hidden=$('#pGoal').value==='maintain';
+      const ah=$('#actHint');if(ah)ah.textContent=ACTIVITY_INFO[$('#pAct').value]||'';
       tdeeOut();
     });
   });
@@ -2647,9 +2662,7 @@ function showOnboarding(){
         <div class="fcol"><label>Height (cm)</label><input type="number" id="obH" value="${state.heightCm}"></div>
         <div class="fcol"><label>Weight (kg)</label><input type="number" step="0.1" id="obW" value="${state.weightKg}"></div></div>
         <div class="fcol" style="margin-bottom:16px"><label>Activity Level</label><select id="obAct">
-          <option value="sedentary">Sedentary (×1.2)</option><option value="light">Lightly Active (×1.375)</option>
-          <option value="moderate" selected>Moderately Active (×1.55)</option><option value="very">Very Active (×1.725)</option>
-          <option value="extreme">Extremely Active (×1.9)</option></select></div>
+          ${Object.entries(ACTIVITY_INFO).map(([k,v])=>`<option value="${k}" ${state.activity===k?'selected':''}>${v}</option>`).join('')}</select></div>
         <div style="display:flex;gap:10px"><button class="btn" id="obBack" style="flex:1">Back</button><button class="btn primary" id="obNext" style="flex:2">Continue</button></div>`;
     }else if(state.step===2){
       const goals=[['cut','Cut','Lose fat while keeping muscle. Calorie deficit.'],['maintain','Maintain','Hold current weight. Eat at TDEE.'],['bulk','Bulk','Build muscle. Controlled calorie surplus.']];
