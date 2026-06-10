@@ -914,7 +914,7 @@ async function identifyFoodFromPhoto(base64Image,mimeType){
       'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'
     },
     body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',max_tokens:1000,
+      model:'claude-sonnet-4-6',max_tokens:1000,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mimeType,data:base64Image}},
         {type:'text',text:'Analyze this food image. Return ONLY valid JSON (no markdown, no explanation) with this exact structure:\n{"items": [{"name": "string (specific food name for USDA database search)", "estimatedGrams": number, "confidence": "high"|"medium"|"low", "notes": "optional string"}]}'}
@@ -2696,10 +2696,11 @@ function showOnboarding(){
   const ob=$('#onboard');
   ob.hidden=false;
   const state={step:0,name:'',dob:'',sex:'male',heightCm:'',weightKg:'',activity:'moderate',goal:'maintain',weeklyRate:0.5,
+    usdaKey:apiKeys.usda||'',anthropicKey:apiKeys.anthropic||'',
     week:{0:'rest',1:'training',2:'training',3:'rest',4:'training',5:'training',6:'cardio'}};
   const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   function render(){
-    const dots='<div class="ob-step-dots">'+[0,1,2,3].map(i=>'<span class="'+(i===state.step?'on':'')+'"></span>').join('')+'</div>';
+    const dots='<div class="ob-step-dots">'+[0,1,2,3,4].map(i=>'<span class="'+(i===state.step?'on':'')+'"></span>').join('')+'</div>';
     let html='';
     if(state.step===0){
       html=`${dots}
@@ -2726,6 +2727,15 @@ function showOnboarding(){
           <input type="range" id="obRate" min="0.25" max="1" step="0.25" value="${state.weeklyRate}" style="width:100%;padding:0">
         </div>
         <div style="display:flex;gap:10px;margin-top:10px"><button class="btn" id="obBack" style="flex:1">Back</button><button class="btn primary" id="obNext" style="flex:2">Continue</button></div>`;
+    }else if(state.step===3){
+      html=`${dots}<div class="ob-title">Connect Data Sources</div><div class="ob-sub">Both keys are stored only in this browser and sent only to their own APIs. You can add or change them later in Settings.</div>
+        <div class="fcol" style="margin-bottom:14px"><label>USDA FoodData Central API key — powers food search. <a href="https://fdc.nal.usda.gov/api-key-signup.html" target="_blank" rel="noopener">Get a free key</a></label>
+          <input id="obUsda" value="${esc(state.usdaKey)}" placeholder="Paste USDA key (recommended)" autocomplete="off"></div>
+        <div class="fcol" style="margin-bottom:6px"><label>Anthropic API key — optional, enables AI photo logging</label>
+          <input id="obAnthropic" type="password" value="${esc(state.anthropicKey)}" placeholder="sk-ant-… (optional)" autocomplete="off"></div>
+        <p class="tiny" style="margin-bottom:16px">Without a USDA key you can still log custom foods, barcodes, and saved meals.</p>
+        <div style="display:flex;gap:10px"><button class="btn" id="obBack" style="flex:1">Back</button><button class="btn primary" id="obNext" style="flex:2">${'Continue'}</button></div>
+        <button class="btn full" id="obSkipKeys" style="margin-top:10px;border:none;color:var(--text-muted)">Skip for now</button>`;
     }else{
       html=`${dots}<div class="ob-title">Week Schedule</div><div class="ob-sub">Assign each day a type — macros adjust automatically.</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
@@ -2742,9 +2752,11 @@ function showOnboarding(){
     if(bk)bk.addEventListener('click',()=>{capture();state.step--;render()});
     if(nx)nx.addEventListener('click',()=>{
       if(!capture(true))return;
-      if(state.step===3){finish();return}
+      if(state.step===4){finish();return}
       state.step++;render();
     });
+    const skipKeys=ob.querySelector('#obSkipKeys');
+    if(skipKeys)skipKeys.addEventListener('click',()=>{state.usdaKey='';state.anthropicKey='';state.step++;render()});
     ob.querySelectorAll('.goal-card').forEach(c=>{
       const pick=()=>{state.goal=c.dataset.goal;render()};
       c.addEventListener('click',pick);
@@ -2771,6 +2783,10 @@ function showOnboarding(){
       if(validate&&(!state.heightCm||!state.weightKg)){toast('Height and weight are required','error');return false}
     }
     if(state.step===3){
+      state.usdaKey=ob.querySelector('#obUsda')?.value.trim()??state.usdaKey;
+      state.anthropicKey=ob.querySelector('#obAnthropic')?.value.trim()??state.anthropicKey;
+    }
+    if(state.step===4){
       ob.querySelectorAll('[data-obdow]').forEach(s=>{state.week[+s.dataset.obdow]=s.value});
     }
     return true;
@@ -2780,6 +2796,9 @@ function showOnboarding(){
     profile={name:state.name,dob:state.dob,sex:state.sex,heightCm:state.heightCm,weightKg:state.weightKg,
       activity:state.activity,goal:state.goal,weeklyRate:state.goal==='maintain'?0:state.weeklyRate};
     saveProfile();
+    if(state.usdaKey)apiKeys.usda=state.usdaKey;
+    if(state.anthropicKey)apiKeys.anthropic=state.anthropicKey;
+    saveKeys();
     targetsByType=defaultDayTargets(profile);saveTargets();
     settings.weekSchedule=state.week;saveSettings();
     ob.hidden=true;
