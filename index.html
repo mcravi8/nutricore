@@ -37,21 +37,36 @@
   --transition:150ms cubic-bezier(0.4,0,0.2,1); --transition-slow:300ms cubic-bezier(0.4,0,0.2,1);
   --topbar-h:56px; --sidenav-w:68px; --bottomnav-h:60px;
 }
-/* ---------- LIGHT THEME ---------- */
+/* ---------- LIGHT THEME (iOS system-grouped palette) ---------- */
 html[data-theme="light"]{
-  --bg-base:#EEF0F4; --bg-surface:#FFFFFF; --bg-raised:#F7F8FA; --bg-hover:#E6E9EF;
-  --border:#DEE2E8; --border-strong:#C2C8D2;
-  --text-primary:#171A1F; --text-secondary:#5A626E; --text-muted:#98A0AC;
-  --accent:#0A7C50; --accent-dim:rgba(13,168,119,0.14); --accent-glow:rgba(10,124,80,0.28);
-  --shadow-sm:0 1px 2px rgba(16,24,40,0.06); --shadow-md:0 6px 18px rgba(16,24,40,0.10); --shadow-lg:0 16px 44px rgba(16,24,40,0.18);
-  --glow-accent:0 2px 10px rgba(10,124,80,0.22);
+  --bg-base:#F2F2F7; --bg-surface:#FFFFFF; --bg-raised:#FFFFFF; --bg-hover:#F2F2F7;
+  --border:#E5E5EA; --border-strong:#D1D1D6;
+  --text-primary:#0B0B0F; --text-secondary:#6E6E73; --text-muted:#AEAEB2;
+  --accent:#0DA877; --accent-dim:rgba(13,168,119,0.13); --accent-glow:rgba(13,168,119,0.25);
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.05); --shadow-md:0 4px 14px rgba(16,24,40,0.08); --shadow-lg:0 16px 44px rgba(16,24,40,0.16);
+  --glow-accent:0 2px 10px rgba(13,168,119,0.20);
 }
-html[data-theme="light"] #topbar{background:rgba(255,255,255,0.85)}
-html[data-theme="light"] #bottomnav{background:rgba(255,255,255,0.9)}
-html[data-theme="light"] .overlay{background:rgba(30,34,42,0.45)}
+html[data-theme="light"] #topbar{background:rgba(242,242,247,0.82);border-bottom-color:rgba(0,0,0,0.08)}
+html[data-theme="light"] #bottomnav{background:rgba(249,249,251,0.85);border-top-color:rgba(0,0,0,0.08)}
+html[data-theme="light"] .overlay{background:rgba(30,34,42,0.4)}
+html[data-theme="light"] .card,html[data-theme="light"] .meal{border:none;box-shadow:0 1px 2px rgba(16,24,40,0.05),0 4px 14px rgba(16,24,40,0.05)}
+html[data-theme="light"] .meal-head{border-left:none;padding-left:14px}
+html[data-theme="light"] .seg{background:#E9E9EB;border:none;padding:2px;border-radius:10px}
+html[data-theme="light"] .seg button{border-radius:8px;color:#3C3C43}
+html[data-theme="light"] .seg button.active{background:#FFFFFF;color:#0B0B0F;box-shadow:0 1px 4px rgba(0,0,0,0.12),0 3px 8px rgba(0,0,0,0.06)}
+html[data-theme="light"] input,html[data-theme="light"] select,html[data-theme="light"] textarea{background:#F2F2F7;border-color:transparent}
+html[data-theme="light"] input:focus,html[data-theme="light"] select:focus,html[data-theme="light"] textarea:focus{border-color:var(--accent);background:#FFFFFF}
+html[data-theme="light"] .btn{background:#FFFFFF;border-color:#E5E5EA}
+html[data-theme="light"] .btn:hover{background:#F2F2F7}
+html[data-theme="light"] .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+html[data-theme="light"] .bar-track{background:#E5E5EA}
+html[data-theme="light"] .qchip,html[data-theme="light"] .subtab{box-shadow:0 1px 2px rgba(16,24,40,0.04);border:none;background:#FFFFFF}
+html[data-theme="light"] .subtab.active{background:var(--accent-dim);color:var(--accent)}
+html[data-theme="light"] .glass{background:#E5E5EA}
+html[data-theme="light"] #ctxMenu,html[data-theme="light"] .cal-pop{border:none;box-shadow:var(--shadow-lg)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%}
-body{height:100%;background:var(--bg-base);color:var(--text-primary);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-feature-settings:"cv02","cv03","cv04","cv11";font-size:var(--font-base);overflow:hidden}
+body{height:100%;background:var(--bg-base);color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Inter',system-ui,sans-serif;font-feature-settings:"cv02","cv03","cv04","cv11";font-size:var(--font-base);overflow:hidden;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -362,6 +377,33 @@ table.dt tr:last-child td{border-bottom:none}
 .ai-item input[type=text]{flex:1}
 .ai-item input[type=number]{width:76px;text-align:center}
 
+/* ---------- APPLE HIG LAYER ---------- */
+.page-head{margin:6px 2px 16px}
+.page-head h1{font-size:34px;font-weight:800;letter-spacing:-0.022em;line-height:1.1}
+.page-head .page-sub{font-size:15px;color:var(--text-secondary);margin-top:3px;font-weight:var(--fw-medium)}
+.card,.meal{border-radius:18px}
+.btn{border-radius:12px}
+.bar-track{height:7px}
+.calring .prog{stroke:var(--accent)}
+.calring .prog.over{stroke:var(--danger)}
+.mchip{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 34px}
+.mchip svg{width:17px;height:17px}
+.water-row .glass{width:18px;height:36px;border-radius:9px;border:none;background:var(--bg-hover);overflow:hidden}
+.water-row .glass .fillw{border-radius:9px}
+.water-row .glass svg{display:none}
+.water-row .glass.full{border:none}
+.streak-card.on{background:linear-gradient(135deg,var(--accent),#0B8F66);border:none;color:#fff}
+.streak-card.on .streak-num{color:#fff}
+.streak-card.on .muted{color:rgba(255,255,255,0.85)}
+.remind-card{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--accent-dim);border:1px solid rgba(13,168,119,0.3);border-radius:18px;padding:14px 16px;margin-bottom:16px;animation:slideIn 250ms}
+.remind-card .rc-icon{width:38px;height:38px;border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 38px}
+.remind-card .rc-txt{flex:1;min-width:140px}
+.remind-card .rc-title{font-weight:var(--fw-bold);font-size:var(--font-base)}
+.remind-card .rc-sub{font-size:var(--font-xs);color:var(--text-secondary);margin-top:1px}
+.remind-card input{width:90px;text-align:center}
+.rg-title{letter-spacing:0.08em}
+.sec-title{font-size:19px;letter-spacing:-0.01em}
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width:767px){
   #sidenav{display:none}
@@ -423,7 +465,7 @@ table.dt tr:last-child td{border-bottom:none}
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
-function getTheme(){try{return localStorage.getItem('nt_theme')==='light'?'light':'dark'}catch(e){return 'dark'}}
+function getTheme(){try{return localStorage.getItem('nt_theme')==='dark'?'dark':'light'}catch(e){return 'light'}}
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
   try{const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'#EEF0F4':'#08080E');}catch(e){}
@@ -578,6 +620,9 @@ function fmtAmt(v){if(v==null||isNaN(v))return '0';const n=+v;if(Math.abs(n)>=10
 function dstr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 const todayStr=()=>dstr(new Date());
 function addDaysStr(ds,n){const d=new Date(ds+'T12:00:00');d.setDate(d.getDate()+n);return dstr(d)}
+function weekKey(ds){const d=new Date(ds+'T12:00:00');const off=(d.getDay()+6)%7;d.setDate(d.getDate()-off);return dstr(d)}
+function pageHead(title,sub){return '<div class="page-head"><h1>'+esc(title)+'</h1><div class="page-sub">'+esc(sub)+'</div></div>'}
+function mealIcon(id){return ({breakfast:'coffee',lunch:'utensils-crossed',dinner:'salad',snacks:'cookie'})[id]||'utensils'}
 function fmtDateLabel(ds){
   const t=todayStr();
   if(ds===t)return 'Today, '+new Date(ds+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric'});
@@ -1063,6 +1108,13 @@ function initTopbar(){
 async function renderToday(){
   const entries=await entriesFor(S.date);
   const totals=sumDay(entries);
+  const isToday=S.date===todayStr();
+  const dObj=new Date(S.date+'T12:00:00');
+  const headTitle=isToday?'Today':(S.date===addDaysStr(todayStr(),-1)?'Yesterday':dObj.toLocaleDateString('en-US',{weekday:'long'}));
+  const headSub=dObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  let todayWeight=null;
+  if(isToday){try{todayWeight=await dbGet('weightLog',S.date)}catch(e){}}
+  const showWeigh=isToday&&new Date().getDay()===1&&!todayWeight&&settings.weighDismissedWeek!==weekKey(S.date);
   const mt=macroTargetsFor(S.date);
   const burn=await workoutBurn(S.date);
   const calTarget=(+mt.calories||0)+burn;
@@ -1089,6 +1141,7 @@ async function renderToday(){
     return `<div class="meal" data-meal="${esc(m.id)}">
       <div class="meal-head" style="border-left-color:${esc(m.color)}" role="button" tabindex="0" aria-expanded="${open}" aria-label="Toggle ${esc(m.name)}">
         <span class="chev${open?' open':''}"><i data-lucide="chevron-right"></i></span>
+        <span class="mchip" style="background:${esc(m.color)}22;color:${esc(m.color)}"><i data-lucide="${mealIcon(m.id)}"></i></span>
         <span class="mname">${esc(m.name)}</span>
         <button class="addbtn" data-addmeal="${esc(m.id)}" aria-label="Add food to ${esc(m.name)}"><i data-lucide="plus"></i> Add</button>
         <span class="mcal">${fmtN(mcal)} cal</span>
@@ -1111,6 +1164,14 @@ async function renderToday(){
   };
 
   $('#content').innerHTML=`
+  ${pageHead(headTitle,headSub)}
+  ${showWeigh?`<div class="remind-card" id="weighCard">
+    <span class="rc-icon"><i data-lucide="scale"></i></span>
+    <div class="rc-txt"><div class="rc-title">Monday weigh-in</div><div class="rc-sub">Weekly check-in keeps your trend honest.</div></div>
+    <input type="number" step="0.1" min="20" max="400" id="weighKg" placeholder="${profile?.weightKg||'kg'}" aria-label="Weight in kg"><span class="tiny">kg</span>
+    <button class="btn sm primary" id="weighSave">Save</button>
+    <button class="icon-btn" id="weighSkip" aria-label="Dismiss until next week"><i data-lucide="x"></i></button>
+  </div>`:''}
   <div id="macrobar">
     <div class="calring" role="img" aria-label="${over?Math.abs(remaining)+' calories over target':remaining+' calories remaining of '+fmtN(calTarget)}">
       <svg width="84" height="84" viewBox="0 0 84 84">
@@ -1159,6 +1220,21 @@ async function renderToday(){
     S.prevRemaining=remaining;
   });
 
+  const wSave=$('#weighSave');
+  if(wSave){
+    wSave.addEventListener('click',async()=>{
+      const kg=+$('#weighKg').value;
+      if(!kg||kg<20){toast('Enter a valid weight','error');return}
+      await dbPut('weightLog',{date:S.date,kg,note:'Monday check-in'});
+      if(profile){profile.weightKg=kg;saveProfile()}
+      toast('Weight saved — see Progress for the trend','success');
+      renderToday();
+    });
+    $('#weighSkip').addEventListener('click',()=>{
+      settings.weighDismissedWeek=weekKey(todayStr());saveSettings();renderToday();
+    });
+    $('#weighKg').addEventListener('keydown',e=>{if(e.key==='Enter')wSave.click()});
+  }
   wireToday(entries);
   icons();
 }
@@ -1759,13 +1835,14 @@ async function renderInsights(){
   };
 
   $('#content').innerHTML=`
-  <div class="period-sel seg" style="max-width:280px">
-    ${[7,30,90].map(p=>`<button data-p="${p}" class="${p===period?'active':''}" aria-label="${p} day period">${p}D</button>`).join('')}
+  ${pageHead('Insights','Last '+period+' days')}
+  <div class="period-sel seg" style="max-width:300px">
+    ${[[7,'Week'],[30,'Month'],[90,'90 Days']].map(([p,l])=>`<button data-p="${p}" class="${p===period?'active':''}" aria-label="${l} period">${l}</button>`).join('')}
   </div>
-  <div class="card streak-card">
-    <i data-lucide="${streak>=7?'trophy':'flame'}" style="width:38px;height:38px;color:${streak>0?'var(--warning)':'var(--text-muted)'}"></i>
-    <div><div class="streak-num" style="color:${streak>0?'var(--warning)':'var(--text-muted)'}">${streak}</div>
-    <div class="muted">days logged${streak>=7?' — on fire':''}</div></div>
+  <div class="card streak-card${streak>0?' on':''}">
+    <i data-lucide="${streak>=7?'trophy':'flame'}" style="width:38px;height:38px;color:${streak>0?'#fff':'var(--text-muted)'}"></i>
+    <div><div class="streak-num"${streak>0?'':' style="color:var(--text-muted)"'}>${streak} day${streak===1?'':'s'}</div>
+    <div class="muted">logging streak${streak>=7?' — keep it going':''}</div></div>
   </div>
   <div class="card"><div class="sec-title"><i data-lucide="bar-chart-3"></i> Calorie Balance</div>
     <div class="chart-box"><canvas id="calChart" aria-label="Calorie balance chart" role="img"></canvas></div></div>
@@ -1855,6 +1932,7 @@ async function renderInsights(){
 async function renderLibrary(){
   const tabs=[['search','Search'],['recents','Recents'],['favorites','Favorites'],['custom','Custom Foods'],['meals','Meals']];
   $('#content').innerHTML=`
+    ${pageHead('Library','Foods, meals & favorites')}
     <div class="subtabs">${tabs.map(([id,l])=>`<button class="subtab${S.libTab===id?' active':''}" data-lt="${id}">${l}</button>`).join('')}</div>
     <div id="libBody"></div>`;
   $$('.subtab').forEach(b=>b.addEventListener('click',()=>{S.libTab=b.dataset.lt;renderLibrary()}));
@@ -2162,7 +2240,6 @@ async function renderProgress(){
   chartDefaults();
   const weights=(await dbAll('weightLog')).sort((a,b)=>a.date<b.date?-1:1);
   const workouts=(await dbAll('workoutLog')).sort((a,b)=>b.date<a.date?-1:1).slice(0,20);
-  const measures=(await dbAll('bodyMeasurements')).sort((a,b)=>a.date<b.date?-1:1);
 
   const wRows=weights.slice(-30).reverse().map((w,i,arr)=>{
     const prev=weights[weights.indexOf(w)-1];
@@ -2178,6 +2255,7 @@ async function renderProgress(){
 
   const typeIcons={strength:'dumbbell',hiit:'zap',cardio:'heart-pulse',sport:'volleyball',other:'activity'};
   $('#content').innerHTML=`
+  ${pageHead('Progress',new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'}))}
   <div class="card">
     <div class="sec-title"><i data-lucide="scale"></i> Body Weight <button class="btn sm primary" id="logWeight" style="margin-left:auto"><i data-lucide="plus"></i> Log Weight</button></div>
     ${weights.length?`<div class="chart-box"><canvas id="weightChart" role="img" aria-label="Weight trend"></canvas></div>
@@ -2193,23 +2271,13 @@ async function renderProgress(){
         <button class="icon-btn" data-wkdel="${w.id}" aria-label="Delete workout"><i data-lucide="x" style="width:14px;height:14px"></i></button></div>`).join('')
     :'<p class="muted">No workouts logged. Today’s calorie target rises automatically when you log one.</p>'}
   </div>
-  <div class="card">
-    <div class="sec-title"><i data-lucide="ruler"></i> Body Measurements <button class="btn sm primary" id="logMeasure" style="margin-left:auto"><i data-lucide="plus"></i> Log Set</button></div>
-    ${measures.length?`
-      <div class="seg" style="flex-wrap:wrap;max-width:100%;margin-bottom:12px" id="measureSeg">
-        ${MEASURE_FIELDS.map(([k,l])=>`<button data-mk="${k}" class="${S.measureMetric===k?'active':''}">${l}</button>`).join('')}
-      </div>
-      <div class="chart-box" style="height:200px"><canvas id="measureChart" role="img" aria-label="Measurement trend"></canvas></div>`
-    :'<p class="muted">Optional: track waist, chest, arms, hips, and thighs over time.</p>'}
-  </div>`;
+  `;
   icons();
 
   $('#logWeight').addEventListener('click',()=>weightModal());
   $('#logWorkout').addEventListener('click',()=>workoutModal());
-  $('#logMeasure').addEventListener('click',()=>measureModal());
   $$('[data-wdel]').forEach(b=>b.addEventListener('click',async()=>{await dbDel('weightLog',b.dataset.wdel);renderProgress()}));
   $$('[data-wkdel]').forEach(b=>b.addEventListener('click',async()=>{await dbDel('workoutLog',b.dataset.wkdel);renderProgress()}));
-  $$('#measureSeg button').forEach(b=>b.addEventListener('click',()=>{S.measureMetric=b.dataset.mk;renderProgress()}));
 
   if(window.Chart&&weights.length){
     const labels=weights.map(w=>w.date.slice(5));
@@ -2224,13 +2292,6 @@ async function renderProgress(){
         {label:'7-day avg',data:ma,borderColor:'#0DA877',borderDash:[5,4],pointRadius:0,tension:0.3}
       ]},
       options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'kg'}},x:{grid:{display:false}}}}});
-  }
-  if(window.Chart&&measures.length){
-    const k=S.measureMetric;
-    const pts=measures.filter(m=>m[k]!=null);
-    makeChart('measureChart',{type:'line',
-      data:{labels:pts.map(m=>m.date.slice(5)),datasets:[{label:MEASURE_FIELDS.find(f=>f[0]===k)[1]+' (cm)',data:pts.map(m=>m[k]),borderColor:'#34D399',backgroundColor:'rgba(52,211,153,0.15)',pointRadius:3,tension:0.25}]},
-      options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'cm'}},x:{grid:{display:false}}}}});
   }
 }
 function weightModal(){
@@ -2326,6 +2387,7 @@ async function renderSettings(){
   const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
   $('#content').innerHTML=`
+  ${pageHead('Settings','Profile, targets & data')}
   <div class="card">
     <div class="sec-title"><i data-lucide="palette"></i> Appearance</div>
     <div class="seg" id="themeSeg" style="max-width:300px">
