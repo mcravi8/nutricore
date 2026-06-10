@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>NutriCore</title>
 <meta name="theme-color" content="#08080E">
 <meta name="background-color" content="#08080E">
@@ -28,15 +28,27 @@
   --water:#4ECDC4; --sodium:#DA77F2; --sugar:#FF8FAB;
   --vitamins:#A78BFA; --minerals:#34D399; --electrolytes:#60A5FA; --antioxidants:#F472B6; --omega:#FBBF24;
   --success:#51CF66; --warning:#FCC419; --danger:#FF6B6B;
-  --accent:#7C6FF7; --accent-dim:rgba(124,111,247,0.15); --accent-glow:rgba(124,111,247,0.35);
+  --accent:#0DA877; --accent-dim:rgba(13,168,119,0.15); --accent-glow:rgba(13,168,119,0.35);
   --font-xs:11px; --font-sm:13px; --font-base:15px; --font-md:17px; --font-lg:20px; --font-xl:24px; --font-2xl:32px; --font-3xl:42px;
   --fw-light:300; --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700; --fw-black:800;
   --radius-sm:6px; --radius-md:12px; --radius-lg:16px; --radius-xl:24px; --radius-full:9999px;
   --shadow-sm:0 1px 3px rgba(0,0,0,0.4); --shadow-md:0 4px 16px rgba(0,0,0,0.5); --shadow-lg:0 12px 40px rgba(0,0,0,0.7);
-  --glow-accent:0 0 24px rgba(124,111,247,0.3);
+  --glow-accent:0 0 24px rgba(13,168,119,0.3);
   --transition:150ms cubic-bezier(0.4,0,0.2,1); --transition-slow:300ms cubic-bezier(0.4,0,0.2,1);
   --topbar-h:56px; --sidenav-w:68px; --bottomnav-h:60px;
 }
+/* ---------- LIGHT THEME ---------- */
+html[data-theme="light"]{
+  --bg-base:#EEF0F4; --bg-surface:#FFFFFF; --bg-raised:#F7F8FA; --bg-hover:#E6E9EF;
+  --border:#DEE2E8; --border-strong:#C2C8D2;
+  --text-primary:#171A1F; --text-secondary:#5A626E; --text-muted:#98A0AC;
+  --accent:#0A7C50; --accent-dim:rgba(13,168,119,0.14); --accent-glow:rgba(10,124,80,0.28);
+  --shadow-sm:0 1px 2px rgba(16,24,40,0.06); --shadow-md:0 6px 18px rgba(16,24,40,0.10); --shadow-lg:0 16px 44px rgba(16,24,40,0.18);
+  --glow-accent:0 2px 10px rgba(10,124,80,0.22);
+}
+html[data-theme="light"] #topbar{background:rgba(255,255,255,0.85)}
+html[data-theme="light"] #bottomnav{background:rgba(255,255,255,0.9)}
+html[data-theme="light"] .overlay{background:rgba(30,34,42,0.45)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%}
 body{height:100%;background:var(--bg-base);color:var(--text-primary);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-feature-settings:"cv02","cv03","cv04","cv11";font-size:var(--font-base);overflow:hidden}
@@ -53,7 +65,7 @@ a{color:var(--accent)}
 svg.lucide{width:20px;height:20px;stroke-width:2}
 
 /* ---------- TOPBAR ---------- */
-#topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:rgba(8,8,14,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 16px;z-index:50}
+#topbar{position:fixed;top:0;left:0;right:0;height:calc(var(--topbar-h) + env(safe-area-inset-top));background:rgba(8,8,14,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:env(safe-area-inset-top) 16px 0;z-index:50}
 .brand{display:flex;align-items:center;gap:8px;margin-right:8px}
 .logo{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:var(--fw-black);font-size:15px;color:#fff;box-shadow:var(--glow-accent)}
 .brand span{font-size:16px;font-weight:var(--fw-semibold)}
@@ -76,7 +88,7 @@ svg.lucide{width:20px;height:20px;stroke-width:2}
 .cal-day .dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--success)}
 
 /* ---------- NAV ---------- */
-#sidenav{position:fixed;top:var(--topbar-h);left:0;bottom:0;width:var(--sidenav-w);background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:4px;padding:12px 8px;z-index:40;transition:width var(--transition-slow);overflow:hidden}
+#sidenav{position:fixed;top:calc(var(--topbar-h) + env(safe-area-inset-top));left:0;bottom:0;width:var(--sidenav-w);background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:4px;padding:12px 8px;z-index:40;transition:width var(--transition-slow);overflow:hidden}
 #sidenav:hover{width:200px}
 .nav-item{display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:var(--radius-md);color:var(--text-secondary);font-size:var(--font-sm);font-weight:var(--fw-medium);white-space:nowrap;transition:all var(--transition)}
 .nav-item:hover{background:var(--bg-hover);color:var(--text-primary)}
@@ -87,7 +99,7 @@ svg.lucide{width:20px;height:20px;stroke-width:2}
 #bottomnav{display:none;align-items:stretch}
 
 /* ---------- MAIN ---------- */
-#main{position:fixed;top:var(--topbar-h);left:var(--sidenav-w);right:0;bottom:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
+#main{position:fixed;top:calc(var(--topbar-h) + env(safe-area-inset-top));left:var(--sidenav-w);right:0;bottom:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
 .content{max-width:960px;margin:0 auto;padding:20px 24px 120px}
 .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:16px}
 .sec-title{font-size:var(--font-md);font-weight:var(--fw-bold);margin-bottom:12px;display:flex;align-items:center;gap:8px}
@@ -109,8 +121,8 @@ svg.lucide{width:20px;height:20px;stroke-width:2}
 
 /* ---------- MACRO SUMMARY BAR ---------- */
 #macrobar{position:sticky;top:0;z-index:30;background:var(--bg-surface);border-bottom:1px solid var(--border);margin:-20px -24px 20px;padding:12px 24px;display:flex;align-items:center;gap:24px;min-height:80px}
-.calring{position:relative;width:84px;height:84px;flex:0 0 84px}
-.calring svg{transform:rotate(-90deg)}
+.calring{position:relative;width:96px;height:96px;flex:0 0 96px}
+.calring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .calring .track{fill:none;stroke:var(--bg-hover);stroke-width:8}
 .calring .prog{fill:none;stroke:var(--cal);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 600ms cubic-bezier(0,0,0.2,1),stroke var(--transition)}
 .calring .prog.over{stroke:var(--danger)}
@@ -154,8 +166,8 @@ svg.lucide{width:20px;height:20px;stroke-width:2}
 .entry .ecal{font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;text-align:right}
 .entry .edots{display:flex;gap:5px;margin-top:4px;justify-content:flex-end}
 .entry .edots span{width:8px;height:8px;border-radius:50%;display:inline-block}
-.empty-meal{padding:18px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px;color:var(--text-muted);font-size:var(--font-sm)}
-.empty-meal svg{width:36px;height:36px;opacity:0.5}
+.empty-meal{padding:11px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px;color:var(--text-muted);font-size:var(--font-sm)}
+.empty-meal svg{width:22px;height:22px;opacity:0.5}
 
 /* ---------- DETAIL PANEL ---------- */
 .detail{border-top:1px solid var(--border);background:var(--bg-base);padding:16px;animation:slideIn 200ms}
@@ -202,7 +214,7 @@ svg.lucide{width:20px;height:20px;stroke-width:2}
 #fab{position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md),var(--glow-accent);z-index:45;transition:transform var(--transition);animation:fabPulse 2.5s ease-in-out infinite}
 #fab:hover{transform:scale(1.08)}
 #fab svg{width:26px;height:26px}
-@keyframes fabPulse{0%,100%{box-shadow:var(--shadow-md),0 0 16px rgba(124,111,247,0.25)}50%{box-shadow:var(--shadow-md),0 0 30px rgba(124,111,247,0.5)}}
+@keyframes fabPulse{0%,100%{box-shadow:var(--shadow-md),0 0 16px rgba(13,168,119,0.25)}50%{box-shadow:var(--shadow-md),0 0 30px rgba(13,168,119,0.5)}}
 
 /* ---------- MODALS ---------- */
 .overlay{position:fixed;inset:0;background:rgba(4,4,8,0.7);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 200ms}
@@ -354,17 +366,23 @@ table.dt tr:last-child td{border-bottom:none}
 @media (max-width:767px){
   #sidenav{display:none}
   #bottomnav{display:flex}
-  #topbar{padding:0 10px;gap:4px}
+  #topbar{padding:env(safe-area-inset-top) 10px 0;gap:4px}
   #dateLabel{font-size:var(--font-sm);padding:6px 6px}
   .icon-btn{width:32px;height:32px}
   .chip{padding:4px 8px;font-size:10px}
   .datenav{gap:0}
   #main{left:0;bottom:var(--bottomnav-h)}
-  .content{padding:16px 14px 110px}
-  #macrobar{margin:-16px -14px 16px;padding:12px 14px;flex-wrap:wrap;gap:14px}
-  .mbars{flex-basis:100%}
-  #fab{right:50%;transform:translateX(50%);bottom:calc(var(--bottomnav-h) + 16px)}
-  #fab:hover{transform:translateX(50%) scale(1.08)}
+  .content{padding:16px 14px 132px}
+  /* Prevent iOS auto-zoom on input focus: any focusable field must be >=16px */
+  input,select,textarea{font-size:16px}
+  .search-wrap input{font-size:16px}
+  /* Balanced macro summary: calorie ring left, three equal bars stacked in one column */
+  #macrobar{margin:-16px -14px 16px;padding:12px 14px;flex-wrap:nowrap;gap:16px}
+  .mbars{flex:1;flex-basis:auto;min-width:0;flex-direction:column;gap:10px}
+  .mbar{flex:none;width:100%;min-width:0}
+  /* FAB sits bottom-right, clear of meal headers / "+ Add" buttons */
+  #fab{right:16px;left:auto;transform:none;bottom:calc(var(--bottomnav-h) + 16px + env(safe-area-inset-bottom))}
+  #fab:hover{transform:scale(1.08)}
   .overlay{align-items:flex-end}
   .modal{width:100%;max-height:92vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;transform:translateY(40px)}
   .overlay.open .modal{transform:translateY(0)}
@@ -402,6 +420,15 @@ table.dt tr:last-child td{border-bottom:none}
 <script>
 /*JS-START*/
 'use strict';
+/* ============================================================
+   THEME (dark / light) — applied before render to avoid a flash
+============================================================ */
+function getTheme(){try{return localStorage.getItem('nt_theme')==='light'?'light':'dark'}catch(e){return 'dark'}}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  try{const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'#EEF0F4':'#08080E');}catch(e){}
+}
+applyTheme(getTheme());
 /* ============================================================
    CONSTANTS
 ============================================================ */
@@ -493,8 +520,8 @@ const DEFAULT_NUTRIENT_TARGETS={
 };
 
 const DAY_TYPES={
- rest:{label:'Rest Day',color:'#6BCB77'},
- training:{label:'Training Day',color:'#7C6FF7'},
+ rest:{label:'Rest Day',color:'#8888AA'},
+ training:{label:'Training Day',color:'#0DA877'},
  cardio:{label:'Cardio Day',color:'#4ECDC4'},
  both:{label:'Training + Cardio',color:'#FF9A56'}
 };
@@ -575,7 +602,7 @@ function emptyN(){const o={};NKEYS.forEach(k=>o[k]=0);return o}
 function scaleN(n,f){const o={};NKEYS.forEach(k=>o[k]=(+n?.[k]||0)*f);o.netCarbs=Math.max(0,o.carbohydrates-o.fiber);return o}
 function addN(a,b){const o={};NKEYS.forEach(k=>o[k]=(+a?.[k]||0)+(+b?.[k]||0));return o}
 function confetti(){
-  const colors=['#FF6B6B','#5BC8FA','#FFD166','#FF9A56','#6BCB77','#7C6FF7','#DA77F2','#4ECDC4'];
+  const colors=['#FF6B6B','#5BC8FA','#FFD166','#FF9A56','#6BCB77','#0DA877','#DA77F2','#4ECDC4'];
   for(let i=0;i<20;i++){
     const d=document.createElement('div');d.className='confetti-dot';
     d.style.background=colors[i%colors.length];
@@ -1638,8 +1665,9 @@ async function analyzePhoto(ov,dataUrl,mime){
 ============================================================ */
 function chartDefaults(){
   if(!window.Chart)return false;
-  Chart.defaults.color='#8888AA';
-  Chart.defaults.borderColor='#2A2A3A';
+  const _cs=getComputedStyle(document.documentElement);
+  Chart.defaults.color=(_cs.getPropertyValue('--text-secondary').trim())||'#8888AA';
+  Chart.defaults.borderColor=(_cs.getPropertyValue('--border').trim())||'#2A2A3A';
   Chart.defaults.font.family="'Inter',sans-serif";
   Chart.defaults.font.size=11;
   try{
@@ -1789,7 +1817,7 @@ async function renderInsights(){
     data:{labels,datasets:calDatasets},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:hasWeight},
-        annotation:{annotations:{target:{type:'line',yMin:avgTarget,yMax:avgTarget,borderColor:'#7C6FF7',borderWidth:1.5,borderDash:[6,4],label:{display:true,content:'Target '+fmtN(avgTarget),position:'end',backgroundColor:'rgba(124,111,247,0.85)',color:'#fff',font:{size:10}}}}}},
+        annotation:{annotations:{target:{type:'line',yMin:avgTarget,yMax:avgTarget,borderColor:'#0DA877',borderWidth:1.5,borderDash:[6,4],label:{display:true,content:'Target '+fmtN(avgTarget),position:'end',backgroundColor:'rgba(13,168,119,0.85)',color:'#fff',font:{size:10}}}}}},
       scales:{y:{beginAtZero:true,title:{display:true,text:'kcal'}},
         ...(hasWeight?{y2:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'kg'}}}:{}),
         x:{grid:{display:false}}}}
@@ -2193,7 +2221,7 @@ async function renderProgress(){
     makeChart('weightChart',{type:'line',
       data:{labels,datasets:[
         {label:'Weight',data:kg,borderColor:'#5BC8FA',backgroundColor:'rgba(91,200,250,0.15)',pointRadius:3,tension:0.2},
-        {label:'7-day avg',data:ma,borderColor:'#7C6FF7',borderDash:[5,4],pointRadius:0,tension:0.3}
+        {label:'7-day avg',data:ma,borderColor:'#0DA877',borderDash:[5,4],pointRadius:0,tension:0.3}
       ]},
       options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'kg'}},x:{grid:{display:false}}}}});
   }
@@ -2298,6 +2326,15 @@ async function renderSettings(){
   const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
   $('#content').innerHTML=`
+  <div class="card">
+    <div class="sec-title"><i data-lucide="palette"></i> Appearance</div>
+    <div class="seg" id="themeSeg" style="max-width:300px">
+      <button type="button" data-theme-opt="dark"><i data-lucide="moon"></i> Dark</button>
+      <button type="button" data-theme-opt="light"><i data-lucide="sun"></i> Light</button>
+    </div>
+    <p class="tiny" style="margin-top:10px">Choose how NutriCore looks. Your selection is saved on this device.</p>
+  </div>
+
   <div class="card" id="secProfile">
     <div class="sec-title"><i data-lucide="user"></i> Profile &amp; TDEE</div>
     <div class="frow">
@@ -2412,6 +2449,22 @@ async function renderSettings(){
   </div>`;
   icons();
 
+  /* appearance */
+  const themeSeg=$('#themeSeg');
+  if(themeSeg){
+    const cur=getTheme();
+    const opts=themeSeg.querySelectorAll('[data-theme-opt]');
+    opts.forEach(b=>{
+      b.classList.toggle('active',b.dataset.themeOpt===cur);
+      b.addEventListener('click',()=>{
+        const t=b.dataset.themeOpt;
+        try{localStorage.setItem('nt_theme',t)}catch(e){}
+        applyTheme(t);
+        opts.forEach(x=>x.classList.toggle('active',x===b));
+      });
+    });
+  }
+
   /* profile */
   const tdeeOut=()=>{
     const tp={name:$('#pName').value,dob:$('#pDob').value,sex:$('#pSex').value,
@@ -2506,7 +2559,7 @@ async function renderSettings(){
     });
   });
   $('#mtAdd').addEventListener('click',()=>{
-    settings.mealTypes.push({id:'meal_'+Date.now(),name:'New Meal',color:'#7C6FF7',start:'12:00',end:'14:00'});
+    settings.mealTypes.push({id:'meal_'+Date.now(),name:'New Meal',color:'#0DA877',start:'12:00',end:'14:00'});
     saveSettings();renderSettings();
   });
   $$('[data-mtdel]').forEach(b=>b.addEventListener('click',async()=>{
