@@ -141,6 +141,8 @@ svg.lucide{width:20px;height:20px;stroke-width:2}
 .calring{position:relative;width:96px;height:96px;flex:0 0 96px}
 .calring svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
 .calring .track{stroke:var(--border-strong);opacity:0.9}
+.calring .center .big.sz2{font-size:25px}
+.calring .center .big.sz3{font-size:20px}
 .calring .track{fill:none;stroke:var(--bg-hover);stroke-width:8}
 .calring .prog{fill:none;stroke:var(--cal);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 600ms cubic-bezier(0,0,0.2,1),stroke var(--transition)}
 .calring .prog.over{stroke:var(--danger)}
@@ -620,7 +622,7 @@ html[data-theme="dark"] .tt-knob{transform:translateX(22px)}
 <script>
 /*JS-START*/
 'use strict';
-const APP_VERSION='3.2.1';
+const APP_VERSION='3.2.2';
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
@@ -1439,7 +1441,9 @@ async function renderToday(){
           <circle class="prog${over?' over':''}" cx="42" cy="42" r="34" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-frac)}"/>
         </svg>
         <div class="center">
-          <div class="big${over?' over':''}" id="calRemNum">${over?fmtN(Math.abs(remaining)):fmtN(remaining)}</div>
+          ${(()=>{const remStr=over?fmtN(Math.abs(remaining)):fmtN(remaining);
+            const szCls=remStr.length>=6?' sz3':remStr.length>=4?' sz2':'';
+            return `<div class="big${over?' over':''}${szCls}" id="calRemNum">${remStr}</div>`;})()}
           <div class="sub">${over?'over':'left'}</div>
         </div>
       </div>
