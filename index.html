@@ -437,22 +437,114 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .ratio-line{flex-basis:100%;font-size:var(--font-xs);color:var(--text-secondary);display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
 .ratio-line b{font-variant-numeric:tabular-nums;color:var(--text-primary)}
 /* settings containment */
-.dtype-card .frow{gap:8px}
-.dtype-card .fcol{min-width:calc(50% - 8px);flex:1 1 calc(50% - 8px)}
-.dtype-card .fcol label{line-height:1.35}
+/* settings: aligned macro grid */
+.dtype-card .frow{gap:12px 8px}
+.dtype-card .fcol{min-width:calc(50% - 4px);flex:1 1 calc(50% - 4px);gap:6px}
+.dtype-card .fcol label{line-height:1.25;font-weight:600;white-space:nowrap}
+.dtype-card .fcol input{height:42px}
 html[data-theme="light"] .dtype-card input{background:#FFFFFF;border:1px solid var(--border)}
-.mt-row{display:flex;flex-direction:column;gap:8px;cursor:grab;align-items:stretch}
-.mtr1,.mtr2{display:flex;gap:8px;align-items:center}
-.mtr1 [data-mtname]{flex:1;min-width:0}
-.mtr1 input[type=color]{flex:0 0 36px;width:36px;height:34px;padding:2px;border-radius:8px}
-.mtr2 input[type=time]{flex:1 1 0;width:auto;min-width:0;max-width:130px}
-.mtr2 [data-mtshare]{flex:0 0 54px;width:54px;text-align:center}
+/* settings: compact meal-type rows */
+.mt-row{display:flex;flex-direction:column;gap:10px;cursor:grab;align-items:stretch;padding:12px 14px;border-radius:14px;margin-bottom:8px}
+.mtr1{display:flex;gap:10px;align-items:center}
+.mtr2{display:flex;gap:8px;align-items:center}
+.mtr1 [data-mtname]{flex:1;min-width:0;font-weight:600;font-size:15px}
+.mtr1 input[type=color]{flex:0 0 30px;width:30px;height:30px;padding:2px;border-radius:8px}
+.mtr2 input[type=time]{flex:1 1 0;width:auto;min-width:84px;max-width:128px}
+.mtr2 [data-mtshare]{flex:0 0 56px;width:56px;text-align:center;margin-left:auto}
+.mtr2 .tiny{flex:0 0 auto;color:var(--text-secondary)}
 /* meal picker chips in Add Food modal */
 .mealpick{display:flex;gap:6px;padding:10px 18px 0;flex-wrap:wrap}
 .mp{padding:6px 13px;border-radius:var(--radius-full);font-size:12px;font-weight:var(--fw-semibold);background:var(--bg-base);color:var(--text-secondary);border:1px solid var(--border);transition:all var(--transition)}
 .mp.active{background:var(--c);border-color:var(--c);color:#fff}
 html[data-theme="light"] .mp{background:#F2F2F7;border-color:transparent}
 html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
+
+/* ---------- REFINED APPLE LAYER ---------- */
+/* Rhythm & type */
+.content{max-width:720px;padding:18px 18px 130px}
+.page-head{margin:8px 2px 18px}
+.page-head h1{font-size:34px;font-weight:800;letter-spacing:-0.024em;line-height:1.08}
+.page-head .page-sub{font-size:15px;color:var(--text-secondary);margin-top:2px;font-weight:500}
+.sec-title{font-size:20px;font-weight:700;letter-spacing:-0.015em;margin-bottom:14px;gap:9px}
+.sec-title svg{width:20px;height:20px}
+/* Cards: soft grouped insets */
+.card{border-radius:22px;padding:20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,0.28),0 8px 24px -14px rgba(0,0,0,0.5)}
+html[data-theme="light"] .card{box-shadow:0 1px 1px rgba(16,24,40,0.04),0 8px 22px -14px rgba(16,24,40,0.20)}
+/* HERO calorie card */
+#macrobar{position:static;background:var(--bg-surface);border:none;border-bottom:none;border-radius:24px;margin:0 0 14px;padding:20px 22px;min-height:0;display:block;box-shadow:0 1px 2px rgba(0,0,0,0.28),0 10px 28px -16px rgba(0,0,0,0.55)}
+html[data-theme="light"] #macrobar{box-shadow:0 1px 1px rgba(16,24,40,0.04),0 10px 26px -18px rgba(16,24,40,0.22)}
+.hero-top{display:flex;align-items:center;gap:24px}
+.calring{width:128px;height:128px;flex:0 0 128px}
+.calring .track{stroke:var(--bg-hover);stroke-width:7.5}
+.calring .prog{stroke:var(--accent);stroke-width:7.5}
+.calring .prog.over{stroke:#E8843C}
+.calring .center .big{font-size:34px;font-weight:800;letter-spacing:-0.02em;line-height:1}
+.calring .center .big.over{color:#E8843C}
+.calring .center .sub{font-size:12px;font-weight:600;color:var(--text-secondary);margin-top:2px}
+.hero-stats{flex:1;display:flex;flex-direction:column}
+.hstat{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.hstat:last-child{border-bottom:none}
+.hstat .hk{font-size:15px;color:var(--text-secondary);font-weight:500;display:flex;align-items:center;gap:6px}
+.hstat .hk svg{width:14px;height:14px}
+.hstat .hv{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.mbars{display:flex;flex-direction:column;gap:13px;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
+.mbar{flex:none;width:100%;min-width:0}
+.mbar .row1{font-size:14px;margin-bottom:6px;gap:7px}
+.mbar .dot{width:9px;height:9px}
+.mbar .lbl{font-weight:500;color:var(--text-secondary)}
+.mbar .val{font-weight:600;color:var(--text-primary)}
+.bar-track{height:7px;border-radius:99px}
+/* MEALS */
+.meal{border-radius:20px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,0.26),0 8px 22px -14px rgba(0,0,0,0.5)}
+html[data-theme="light"] .meal{box-shadow:0 1px 1px rgba(16,24,40,0.04),0 8px 20px -14px rgba(16,24,40,0.18)}
+.meal-head{padding:14px 16px;gap:12px}
+.mchip{width:38px;height:38px;border-radius:12px;flex:0 0 38px}
+.mchip svg{width:18px;height:18px}
+.meal-head .mname{font-size:17px;font-weight:600;letter-spacing:-0.01em}
+.meal-head .mcal{font-size:15px;color:var(--text-secondary)}
+.meal-head .addbtn{font-size:14px;font-weight:600}
+.entry{padding:13px 16px;gap:12px}
+.entry .ename{font-size:16px;font-weight:600}
+.entry .eserv{font-size:13px}
+.entry .ecal{font-size:16px;font-weight:600}
+/* Streak: compact, not oversized */
+.streak-card{padding:14px 18px;gap:14px;align-items:center}
+.streak-card .streak-num{font-size:20px;font-weight:700}
+.streak-card .muted{font-size:13px}
+
+/* ---------- LIQUID GLASS (iOS 26) ---------- */
+/* Glossy specular sheen + backlit depth on surfaces */
+.card:not(.streak-card):not(.water-done),.meal,#macrobar{position:relative;background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0) 42%),var(--bg-surface);box-shadow:inset 0 0.5px 0 rgba(255,255,255,0.16),inset 0 0 0 0.5px rgba(255,255,255,0.05),0 1px 2px rgba(0,0,0,0.32),0 18px 38px -18px rgba(0,0,0,0.66)}
+.streak-card,.water-done{position:relative;box-shadow:inset 0 0.5px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.3),0 16px 34px -18px rgba(0,0,0,0.6)}
+html[data-theme="light"] .card:not(.streak-card):not(.water-done),html[data-theme="light"] .meal,html[data-theme="light"] #macrobar{background:linear-gradient(180deg,rgba(255,255,255,0.85),rgba(255,255,255,0) 52%),#FFFFFF;box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),0 1px 1px rgba(16,24,40,0.05),0 16px 32px -20px rgba(16,24,40,0.26)}
+/* Liquid-glass floating tab bar (the hovering board) */
+#bottomnav{background:linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.03) 48%,rgba(255,255,255,0.07)),rgba(28,28,32,0.42);backdrop-filter:blur(32px) saturate(200%);-webkit-backdrop-filter:blur(32px) saturate(200%);border:0.5px solid rgba(255,255,255,0.22);box-shadow:0 12px 36px rgba(0,0,0,0.52),0 2px 10px rgba(0,0,0,0.32),inset 0 1px 0 rgba(255,255,255,0.42),inset 0 -1px 0 rgba(0,0,0,0.28),inset 0 0 0 0.5px rgba(255,255,255,0.08)}
+html[data-theme="light"] #bottomnav{background:linear-gradient(180deg,rgba(255,255,255,0.78),rgba(255,255,255,0.42) 48%,rgba(255,255,255,0.58)),rgba(250,250,252,0.5);border:0.5px solid rgba(255,255,255,0.75);box-shadow:0 14px 34px rgba(16,24,40,0.18),inset 0 1px 0 rgba(255,255,255,0.95),inset 0 -1px 0 rgba(16,24,40,0.06)}
+#navInd{background:linear-gradient(180deg,rgba(255,255,255,0.18),rgba(255,255,255,0.06));box-shadow:inset 0 1px 0 rgba(255,255,255,0.28),0 1px 4px rgba(0,0,0,0.22)}
+html[data-theme="light"] #navInd{background:rgba(13,168,119,0.15);box-shadow:inset 0 1px 0 rgba(255,255,255,0.7)}
+/* Glassy translucent top bar */
+#topbar{background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0) 70%),rgba(0,0,0,0.55);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%)}
+html[data-theme="light"] #topbar{background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.45) 70%),rgba(242,242,247,0.6)}
+/* Glass plus + FAB with specular edge */
+.nav-plus{box-shadow:0 8px 20px rgba(13,168,119,0.45),inset 0 1px 0 rgba(255,255,255,0.5),inset 0 -1px 1px rgba(0,0,0,0.15)}
+#fab{box-shadow:0 10px 26px rgba(13,168,119,0.4),0 2px 8px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.45)}
+/* Sliding sun/moon theme switch */
+.theme-toggle{padding:0;background:none;border:none;display:inline-flex;align-items:center;flex:0 0 auto}
+.tt-track{position:relative;width:52px;height:30px;border-radius:999px;display:flex;align-items:center;justify-content:space-between;padding:0 8px;background:rgba(120,120,128,0.30);box-shadow:inset 0 1px 3px rgba(0,0,0,0.3),inset 0 0 0 0.5px rgba(255,255,255,0.06);transition:background var(--transition)}
+html[data-theme="light"] .tt-track{background:#E3E3E8;box-shadow:inset 0 1px 2px rgba(16,24,40,0.12)}
+.tt-track .tt-ic{position:relative;z-index:2;width:14px;height:14px;transition:opacity var(--transition)}
+.tt-sun{color:#F5A623}
+.tt-moon{color:#3A3A3C}
+html[data-theme="light"] .tt-moon{opacity:0.4}
+html[data-theme="dark"] .tt-sun{opacity:0.5}
+.tt-knob{position:absolute;top:3px;left:3px;z-index:1;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.35),0 2px 6px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.85);transition:transform 280ms cubic-bezier(0.3,0.95,0.35,1)}
+html[data-theme="dark"] .tt-knob{transform:translateX(22px)}
+.theme-toggle:hover .tt-track{filter:brightness(1.05)}
+#dateLabel{white-space:nowrap}
+.set-row{display:flex;align-items:center;gap:16px}
+.set-row-main{flex:1;min-width:0}
+.set-row-title{font-size:16px;font-weight:600}
+.set-row-sub{font-size:13px;color:var(--text-secondary);margin-top:2px}
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width:767px){
@@ -464,7 +556,7 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
   .chip{padding:4px 8px;font-size:10px}
   .datenav{gap:0}
   #main{left:0;bottom:0}
-  .content{padding:16px 14px calc(var(--bottomnav-h) + 120px + env(safe-area-inset-bottom,0px))}
+  .content{padding:18px 16px calc(var(--bottomnav-h) + 120px + env(safe-area-inset-bottom,0px))}
   /* Prevent iOS auto-zoom on input focus: any focusable field must be >=16px */
   input,select,textarea{font-size:16px}
   .search-wrap input{font-size:16px}
@@ -475,10 +567,12 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
   input[type=date],input[type=time],input[type=datetime-local]{min-width:0;width:100%;-webkit-appearance:none;appearance:none}
   .seg{max-width:none !important;width:100%}
   .nt-table input{width:74px}
-  /* Balanced macro summary: calorie ring left, three equal bars stacked in one column */
-  #macrobar{margin:-16px -14px 16px;padding:12px 14px;flex-wrap:nowrap;gap:16px}
-  .mbars{flex:1;flex-basis:auto;min-width:0;flex-direction:column;gap:10px}
-  .mbar{flex:none;width:100%;min-width:0}
+  /* Apple hero calorie card on phones */
+  #macrobar{margin:0 0 14px;padding:18px}
+  .hero-top{gap:18px}
+  .calring{width:112px;height:112px;flex:0 0 112px}
+  .calring .center .big{font-size:30px}
+  .mbars{margin-top:16px;padding-top:16px;gap:12px}
   /* FAB sits bottom-right, clear of meal headers / "+ Add" buttons */
   #fab{display:none !important}
   .overlay{align-items:flex-end}
@@ -519,7 +613,7 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
 <script>
 /*JS-START*/
 'use strict';
-const APP_VERSION='3.1.0';
+const APP_VERSION='3.2.0';
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
@@ -1311,22 +1405,27 @@ async function renderToday(){
     <button class="icon-btn" id="weighSkip" aria-label="Dismiss until next week"><i data-lucide="x"></i></button>
   </div>`:''}
   <div id="macrobar">
-    <div class="calring" role="img" aria-label="${over?Math.abs(remaining)+' calories over target':remaining+' calories remaining of '+fmtN(calTarget)}">
-      <svg width="84" height="84" viewBox="0 0 84 84">
-        <circle class="track" cx="42" cy="42" r="34"/>
-        <circle class="prog${over?' over':''}" cx="42" cy="42" r="34" stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/>
-      </svg>
-      <div class="center">
-        <div class="big${over?' over':''}" id="calRemNum">${over?'-'+fmtN(Math.abs(remaining)):fmtN(remaining)}</div>
-        <div class="sub">${over?'over target':'remaining'}</div>
-        <div class="sub">of ${fmtN(calTarget)}</div>
+    <div class="hero-top">
+      <div class="calring" role="img" aria-label="${over?Math.abs(remaining)+' calories over target':remaining+' calories remaining of '+fmtN(calTarget)}">
+        <svg width="84" height="84" viewBox="0 0 84 84">
+          <circle class="track" cx="42" cy="42" r="34"/>
+          <circle class="prog${over?' over':''}" cx="42" cy="42" r="34" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-frac)}"/>
+        </svg>
+        <div class="center">
+          <div class="big${over?' over':''}" id="calRemNum">${over?fmtN(Math.abs(remaining)):fmtN(remaining)}</div>
+          <div class="sub">${over?'over':'left'}</div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span class="hk">Budget</span><span class="hv">${fmtN(calTarget)}</span></div>
+        <div class="hstat"><span class="hk">Food</span><span class="hv">${fmtN(Math.round(totals.calories))}</span></div>
+        ${burn>0?`<div class="hstat"><span class="hk"><i data-lucide="flame"></i> Exercise</span><span class="hv" style="color:var(--accent)">+${fmtN(burn)}</span></div>`:''}
       </div>
     </div>
     <div class="mbars">
       ${mbar('Protein','var(--protein)',totals.protein,+mt.protein||0)}
       ${mbar('Carbs','var(--carbs)',totals.carbohydrates,+mt.carbs||0)}
       ${mbar('Fat','var(--fat)',totals.fat,+mt.fat||0)}
-      ${burn>0?`<div style="flex-basis:100%"><div class="wadj"><i data-lucide="flame"></i> Workout adjustment: +${fmtN(burn)} cal</div></div>`:''}
       ${(()=>{
         const tSum=(+mt.protein||0)*4+(+mt.carbs||0)*4+(+mt.fat||0)*9;
         if(!tSum)return '';
@@ -1597,7 +1696,7 @@ function openAddModal(mealType){
   const defMeal=mealType||guessMealType();
   const ov=openModal(`
     <div class="modal-head"><h3>Add Food</h3><button class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button></div>
-    <div class="mtabs"
+    <div class="mtabs">
       <button class="mtab active" data-tab="search"><i data-lucide="search"></i> Search</button>
       <button class="mtab" data-tab="barcode"><i data-lucide="scan-line"></i> Barcode</button>
       <button class="mtab" data-tab="photo"><i data-lucide="camera"></i> Photo</button>
@@ -2677,11 +2776,19 @@ async function renderSettings(){
   ${pageHead('Settings','Profile, targets & data')}
   <div class="card">
     <div class="sec-title"><i data-lucide="palette"></i> Appearance</div>
-    <div class="seg" id="themeSeg" style="max-width:300px">
-      <button type="button" data-theme-opt="dark"><i data-lucide="moon"></i> Dark</button>
-      <button type="button" data-theme-opt="light"><i data-lucide="sun"></i> Light</button>
+    <div class="set-row">
+      <div class="set-row-main">
+        <div class="set-row-title">Dark Mode</div>
+        <div class="set-row-sub">Switch between light and dark. Saved on this device.</div>
+      </div>
+      <button id="themeToggle" class="theme-toggle" role="switch" aria-label="Toggle light or dark mode">
+        <span class="tt-track">
+          <i data-lucide="sun" class="tt-ic tt-sun"></i>
+          <i data-lucide="moon" class="tt-ic tt-moon"></i>
+          <span class="tt-knob"></span>
+        </span>
+      </button>
     </div>
-    <p class="tiny" style="margin-top:10px">Choose how NutriCore looks. Your selection is saved on this device.</p>
   </div>
 
   <div class="card" id="secProfile">
@@ -2729,9 +2836,10 @@ async function renderSettings(){
         <h4><span style="width:10px;height:10px;border-radius:50%;background:${v.color};display:inline-block"></span> ${v.label}</h4>
         <div class="frow">
           <div class="fcol"><label>Calories (kcal)</label><input type="number" data-tk="calories" value="${t.calories}"></div>
-          <div class="fcol"><label>Protein (g) <span class="tiny">RDA 1.6–2.2 g/kg${p.weightKg?' ≈ '+Math.round(p.weightKg*1.6)+'–'+Math.round(p.weightKg*2.2)+'g':''}</span></label><input type="number" data-tk="protein" value="${t.protein}"></div>
+          <div class="fcol"><label>Protein (g)</label><input type="number" data-tk="protein" value="${t.protein}"></div>
           <div class="fcol"><label>Carbs (g)</label><input type="number" data-tk="carbs" value="${t.carbs}"></div>
           <div class="fcol"><label>Fat (g)</label><input type="number" data-tk="fat" value="${t.fat}"></div>
+          ${p.weightKg?`<div class="tiny" style="flex-basis:100%;margin-top:-2px;color:var(--text-muted)">Protein RDA 1.6–2.2 g/kg ≈ ${Math.round(p.weightKg*1.6)}–${Math.round(p.weightKg*2.2)} g/day</div>`:''}
         </div>
         <div class="consist" data-consist></div></div>`;
     }).join('')}
@@ -2789,7 +2897,6 @@ async function renderSettings(){
           <input type="time" value="${esc(m.start||'00:00')}" data-mtstart aria-label="Start time">
           <span class="tiny">to</span>
           <input type="time" value="${esc(m.end||'23:59')}" data-mtend aria-label="End time">
-          <span style="flex:1"></span>
           <input type="number" min="0" max="100" value="${mealShare(m)}" data-mtshare aria-label="${esc(m.name)} calorie share percent">
           <span class="tiny">%</span>
         </div>
@@ -2818,18 +2925,14 @@ async function renderSettings(){
   icons();
 
   /* appearance */
-  const themeSeg=$('#themeSeg');
-  if(themeSeg){
-    const cur=getTheme();
-    const opts=themeSeg.querySelectorAll('[data-theme-opt]');
-    opts.forEach(b=>{
-      b.classList.toggle('active',b.dataset.themeOpt===cur);
-      b.addEventListener('click',()=>{
-        const t=b.dataset.themeOpt;
-        try{localStorage.setItem('nt_theme',t)}catch(e){}
-        applyTheme(t);
-        opts.forEach(x=>x.classList.toggle('active',x===b));
-      });
+  const themeToggle=$('#themeToggle');
+  if(themeToggle){
+    themeToggle.setAttribute('aria-checked',String(getTheme()==='dark'));
+    themeToggle.addEventListener('click',()=>{
+      const next=getTheme()==='dark'?'light':'dark';
+      try{localStorage.setItem('nt_theme',next)}catch(e){}
+      applyTheme(next);
+      themeToggle.setAttribute('aria-checked',String(next==='dark'));
     });
   }
 
