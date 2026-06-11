@@ -47,7 +47,7 @@ html[data-theme="light"]{
   --glow-accent:0 2px 10px rgba(13,168,119,0.20);
 }
 html[data-theme="light"] #topbar{background:rgba(242,242,247,0.82);border-bottom-color:rgba(0,0,0,0.08)}
-html[data-theme="light"] #bottomnav{background:rgba(249,249,251,0.85);border-top-color:rgba(0,0,0,0.08)}
+html[data-theme="light"] #bottomnav{background:rgba(252,252,253,0.85);border-color:rgba(0,0,0,0.08);box-shadow:0 8px 28px rgba(16,24,40,0.16)}
 html[data-theme="light"] .overlay{background:rgba(30,34,42,0.4)}
 html[data-theme="light"] .card,html[data-theme="light"] .meal{border:none;box-shadow:0 1px 2px rgba(16,24,40,0.05),0 4px 14px rgba(16,24,40,0.05)}
 html[data-theme="light"] .meal-head{border-left:none;padding-left:14px}
@@ -109,9 +109,10 @@ svg.lucide{width:20px;height:20px;stroke-width:2}
 .nav-item:hover{background:var(--bg-hover);color:var(--text-primary)}
 .nav-item.active{color:var(--accent);background:var(--accent-dim)}
 .nav-item svg{flex:0 0 22px;width:22px;height:22px}
-#bottomnav{display:none;position:fixed;bottom:0;left:0;right:0;height:calc(var(--bottomnav-h) + env(safe-area-inset-bottom,0px));background:rgba(17,17,24,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:40;padding-bottom:env(safe-area-inset-bottom,0px);align-items:stretch}
-#bottomnav .nav-item{flex-direction:column;gap:3px;padding:8px 2px 6px;flex:1;font-size:10px;font-weight:var(--fw-medium);border-radius:0;justify-content:flex-start;align-items:center}
-#bottomnav .nav-item svg{flex:0 0 24px;width:24px;height:24px}
+/* Floating pill tab bar (GitHub-mobile style): detached, rounded, content scrolls behind */
+#bottomnav{display:none;position:fixed;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom,0px));height:calc(var(--bottomnav-h) + 4px);background:rgba(22,22,26,0.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-full);z-index:40;align-items:stretch;padding:5px;box-shadow:0 8px 28px rgba(0,0,0,0.45)}
+#bottomnav .nav-item{flex-direction:column;gap:2px;padding:4px 2px;flex:1;font-size:10px;font-weight:var(--fw-medium);border-radius:var(--radius-full);justify-content:center;align-items:center}
+#bottomnav .nav-item svg{flex:0 0 22px;width:22px;height:22px}
 
 /* ---------- MAIN ---------- */
 #main{position:fixed;top:calc(var(--topbar-h) + env(safe-area-inset-top));left:var(--sidenav-w);right:0;bottom:0;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
@@ -412,9 +413,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .remind-card input{width:90px;text-align:center}
 .rg-title{letter-spacing:0.08em}
 .sec-title{font-size:19px;letter-spacing:-0.01em}
-/* iOS tab bar: tint only, no background blocks */
-#bottomnav .nav-item,#bottomnav .nav-item.active,#bottomnav .nav-item:hover{background:transparent}
-#bottomnav .nav-item.active{color:var(--accent)}
+/* floating tab bar: active item gets a soft pill, like GitHub mobile */
+#bottomnav .nav-item,#bottomnav .nav-item:hover{background:transparent}
+#bottomnav .nav-item.active{color:var(--accent);background:var(--accent-dim)}
 /* stable water layout: pills row, text always on its own row */
 .water-row{flex-wrap:wrap}
 .water-txt{flex-basis:100%;margin-left:0;margin-top:10px;text-align:left;display:flex;align-items:baseline;gap:10px}
@@ -452,8 +453,8 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
   .icon-btn{width:32px;height:32px}
   .chip{padding:4px 8px;font-size:10px}
   .datenav{gap:0}
-  #main{left:0;bottom:calc(var(--bottomnav-h) + env(safe-area-inset-bottom,0px))}
-  .content{padding:16px 14px 132px}
+  #main{left:0;bottom:0}
+  .content{padding:16px 14px calc(var(--bottomnav-h) + 120px + env(safe-area-inset-bottom,0px))}
   /* Prevent iOS auto-zoom on input focus: any focusable field must be >=16px */
   input,select,textarea{font-size:16px}
   .search-wrap input{font-size:16px}
@@ -469,10 +470,11 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
   .mbars{flex:1;flex-basis:auto;min-width:0;flex-direction:column;gap:10px}
   .mbar{flex:none;width:100%;min-width:0}
   /* FAB sits bottom-right, clear of meal headers / "+ Add" buttons */
-  #fab{right:16px;left:auto;transform:none;bottom:calc(var(--bottomnav-h) + 16px + env(safe-area-inset-bottom))}
+  #fab{right:16px;left:auto;transform:none;bottom:calc(var(--bottomnav-h) + 30px + env(safe-area-inset-bottom,0px))}
   #fab:hover{transform:scale(1.08)}
   .overlay{align-items:flex-end}
   .modal{width:100%;max-height:92vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;transform:translateY(40px)}
+  .modal.tall{min-height:88vh}
   .overlay.open .modal{transform:translateY(0)}
   .score-grid{grid-template-columns:1fr 1fr}
   .macro-big{grid-template-columns:repeat(2,1fr)}
@@ -508,7 +510,7 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
 <script>
 /*JS-START*/
 'use strict';
-const APP_VERSION='2.5.0';
+const APP_VERSION='2.6.0';
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
@@ -625,6 +627,7 @@ const DEFAULT_MEAL_TYPES=[
  {id:'breakfast',name:'Breakfast',color:'#FFD166',start:'06:00',end:'10:00'},
  {id:'lunch',name:'Lunch',color:'#5BC8FA',start:'11:00',end:'14:00'},
  {id:'dinner',name:'Dinner',color:'#FF9A56',start:'17:00',end:'21:00'},
+ {id:'protein_shake',name:'Protein Shake',color:'#A78BFA',start:'15:00',end:'17:30'},
  {id:'snacks',name:'Snacks',color:'#6BCB77',start:'00:00',end:'23:59'}
 ];
 const NAV=[
@@ -669,8 +672,8 @@ const todayStr=()=>dstr(new Date());
 function addDaysStr(ds,n){const d=new Date(ds+'T12:00:00');d.setDate(d.getDate()+n);return dstr(d)}
 function weekKey(ds){const d=new Date(ds+'T12:00:00');const off=(d.getDay()+6)%7;d.setDate(d.getDate()-off);return dstr(d)}
 function pageHead(title,sub){return '<div class="page-head"><h1>'+esc(title)+'</h1><div class="page-sub">'+esc(sub)+'</div></div>'}
-function mealIcon(id){return ({breakfast:'coffee',lunch:'utensils-crossed',dinner:'salad',snacks:'cookie'})[id]||'utensils'}
-const DEFAULT_MEAL_SHARE={breakfast:25,lunch:30,dinner:30,snacks:15};
+function mealIcon(id){return ({breakfast:'coffee',lunch:'utensils-crossed',dinner:'salad',snacks:'cookie',protein_shake:'milk'})[id]||'utensils'}
+const DEFAULT_MEAL_SHARE={breakfast:25,lunch:30,dinner:25,protein_shake:10,snacks:10};
 function mealShare(m){return m.share!=null&&m.share!==''?+m.share:(DEFAULT_MEAL_SHARE[m.id]??0)}
 function fmtDateLabel(ds){
   const t=todayStr();
@@ -721,7 +724,7 @@ let modalStack=[];
 function openModal(html,opts={}){
   const root=$('#modalRoot');
   const ov=document.createElement('div');ov.className='overlay';
-  ov.innerHTML='<div class="modal" role="dialog" aria-modal="true"'+(opts.wide?' style="width:min(820px,calc(100vw - 32px))"':'')+'>'+html+'</div>';
+  ov.innerHTML='<div class="modal'+(opts.tall?' tall':'')+'" role="dialog" aria-modal="true"'+(opts.wide?' style="width:min(820px,calc(100vw - 32px))"':'')+'>'+html+'</div>';
   root.appendChild(ov);modalStack.push(ov);
   ov.addEventListener('mousedown',e=>{if(e.target===ov&&!opts.noDismiss)closeModal()});
   requestAnimationFrame(()=>ov.classList.add('open'));
@@ -830,6 +833,16 @@ function loadSettings(){
     weekSchedule:{0:'rest',1:'training',2:'training',3:'rest',4:'training',5:'training',6:'cardio'}
   },lsGet('nt_settings',{}));
   if(!Array.isArray(settings.mealTypes)||!settings.mealTypes.length)settings.mealTypes=JSON.parse(JSON.stringify(DEFAULT_MEAL_TYPES));
+  /* one-time migration: add Protein Shake section to existing installs */
+  if(!settings.migrShake){
+    settings.migrShake=1;
+    if(!settings.mealTypes.some(m=>m.id==='protein_shake'||/protein\s*shake/i.test(m.name||''))){
+      const snackIdx=settings.mealTypes.findIndex(m=>m.id==='snacks');
+      const shake={id:'protein_shake',name:'Protein Shake',color:'#A78BFA',start:'15:00',end:'17:30',share:10};
+      if(snackIdx>=0)settings.mealTypes.splice(snackIdx,0,shake);else settings.mealTypes.push(shake);
+    }
+    lsSet('nt_settings',settings);
+  }
 }
 function saveSettings(){lsSet('nt_settings',settings)}
 function saveProfile(){lsSet('nt_profile',profile)}
@@ -1543,7 +1556,7 @@ function openAddModal(mealType){
   const defMeal=mealType||guessMealType();
   const ov=openModal(`
     <div class="modal-head"><h3>Add Food</h3><button class="icon-btn" data-close aria-label="Close"><i data-lucide="x"></i></button></div>
-    <div class="mtabs">
+    <div class="mtabs"
       <button class="mtab active" data-tab="search"><i data-lucide="search"></i> Search</button>
       <button class="mtab" data-tab="barcode"><i data-lucide="scan-line"></i> Barcode</button>
       <button class="mtab" data-tab="photo"><i data-lucide="camera"></i> Photo</button>
@@ -1552,7 +1565,7 @@ function openAddModal(mealType){
     <div class="mealpick" id="mealPick" role="radiogroup" aria-label="Log to meal">
       ${settings.mealTypes.map(m=>`<button class="mp${m.id===defMeal?' active':''}" data-mp="${esc(m.id)}" style="--c:${esc(m.color)}" role="radio" aria-checked="${m.id===defMeal}">${esc(m.name)}</button>`).join('')}
     </div>
-    <div class="modal-body" id="addBody"></div>`);
+    <div class="modal-body" id="addBody"></div>`,{tall:true});
   ov.dataset.meal=defMeal;
   ov.querySelectorAll('.mp').forEach(b=>b.addEventListener('click',()=>{
     ov.querySelectorAll('.mp').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-checked','false')});
@@ -1585,16 +1598,39 @@ function renderAddSearch(ov){
   body.innerHTML=`
     <div class="search-wrap"><i data-lucide="search"></i>
       <input id="foodSearch" placeholder="Search foods…" autocomplete="off" aria-label="Search foods"></div>
-    <div id="searchResults">${(apiKeys.usda||'').trim()?'':'<div class="card" style="margin:0 0 10px"><span class="muted">Add your USDA API key in Settings for instant food search. Local custom foods and recents still work.</span></div>'}<div class="muted" style="padding:8px 2px">Start typing to search your library, recents, and USDA FoodData Central.</div></div>`;
+    <div id="searchResults">${(apiKeys.usda||'').trim()?'':'<div class="card" style="margin:0 0 10px"><span class="muted">Add your USDA API key in Settings for instant food search. Local custom foods and recents still work.</span></div>'}<div id="srHome"></div></div>`;
   icons();
+  renderSearchHome(ov);
   const input=body.querySelector('#foodSearch');
   setTimeout(()=>input.focus(),100);
   const run=debounce(()=>runSearch(ov,input.value.trim()),400);
   input.addEventListener('input',()=>{
     const q=input.value.trim();
-    if(q.length<2){body.querySelector('#searchResults').innerHTML='<div class="muted" style="padding:8px 2px">Keep typing…</div>';return}
+    if(q.length<2){body.querySelector('#searchResults').innerHTML='<div id="srHome"></div>';renderSearchHome(ov);return}
     runLocalSearch(ov,q);run();
   });
+}
+async function renderSearchHome(ov){
+  const wrap=ov.querySelector('#srHome');if(!wrap)return;
+  let logs=[];try{logs=await dbAll('foodLog')}catch(e){}
+  if(!logs.length){wrap.innerHTML='<div class="muted" style="padding:8px 2px">Start typing to search your library, recents, and USDA FoodData Central.</div>';return}
+  logs.sort((a,b)=>b.timestamp-a.timestamp);
+  const counts={};
+  logs.forEach(e=>{const k=e.foodName;counts[k]=counts[k]||{n:0,e:null};counts[k].n++;if(!counts[k].e)counts[k].e=e});
+  const freq=Object.entries(counts).filter(([,v])=>v.n>=2).sort((a,b)=>b[1].n-a[1].n).slice(0,6);
+  const freqNames=new Set(freq.map(([k])=>k));
+  const rec=[];const seen=new Set();
+  for(const e of logs){
+    if(seen.has(e.foodName)||freqNames.has(e.foodName))continue;
+    seen.add(e.foodName);rec.push(e);
+    if(rec.length>=6)break;
+  }
+  let html='';
+  if(freq.length)html+='<div class="res-group"><div class="rg-title">Most Logged</div>'+freq.map(([name,v],i)=>`<div data-fq="${i}">${resRow(name,v.n+'× logged · '+(v.e.servingLabel||''),v.e.nutrients?.calories||0,'Frequent','custom')}</div>`).join('')+'</div>';
+  if(rec.length)html+='<div class="res-group"><div class="rg-title">Recent</div>'+rec.map((r,i)=>`<div data-rc="${i}">${resRow(r.foodName,r.servingLabel||'',r.nutrients?.calories||0,'Recent','recent')}</div>`).join('')+'</div>';
+  wrap.innerHTML=html||'<div class="muted" style="padding:8px 2px">Start typing to search your library, recents, and USDA FoodData Central.</div>';
+  wrap.querySelectorAll('[data-fq]').forEach(el=>el.addEventListener('click',()=>showServingSelector(ov,pendingFromEntry(freq[+el.dataset.fq][1].e))));
+  wrap.querySelectorAll('[data-rc]').forEach(el=>el.addEventListener('click',()=>showServingSelector(ov,pendingFromEntry(rec[+el.dataset.rc]))));
 }
 async function localMatches(q){
   const ql=q.toLowerCase();
