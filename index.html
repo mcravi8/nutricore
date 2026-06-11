@@ -508,7 +508,7 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
 <script>
 /*JS-START*/
 'use strict';
-const APP_VERSION='2.4.0';
+const APP_VERSION='2.4.2';
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
@@ -1009,8 +1009,14 @@ async function offLookup(barcode){
   });
   per100.netCarbs=Math.max(0,per100.carbohydrates-per100.fiber);
   const servings=[{grams:100,label:'100 g'},{grams:1,label:'1 g'},{grams:28.35,label:'1 oz'}];
-  const ss=parseFloat(p.serving_size);
-  if(ss&&/g/i.test(p.serving_size||''))servings.push({grams:ss,label:'1 serving ('+p.serving_size+')'});
+  /* OFF serving_size is free text like "1 tray (340 g)" — take serving_quantity
+     (numeric grams) when present, else extract the gram figure, never the leading count. */
+  let sg=parseFloat(p.serving_quantity);
+  if(isNaN(sg)||sg<=0){
+    const m=/([\d.]+)\s*(g|ml)\b/i.exec(p.serving_size||'');
+    if(m)sg=parseFloat(m[1]);
+  }
+  if(sg>1)servings.unshift({grams:sg,label:'1 serving ('+(p.serving_size||fmtAmt(sg)+' g')+')'});
   return {name:p.product_name||('Product '+barcode),brand:p.brands||'',source:'off',fdcId:null,nutrientsPer100g:per100,servings};
 }
 async function identifyFoodFromPhoto(base64Image,mimeType){
