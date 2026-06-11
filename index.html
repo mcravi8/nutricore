@@ -622,7 +622,7 @@ html[data-theme="dark"] .tt-knob{transform:translateX(22px)}
 <script>
 /*JS-START*/
 'use strict';
-const APP_VERSION='3.3.0';
+const APP_VERSION='3.4.0';
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
@@ -1154,24 +1154,36 @@ async function offLookup(barcode){
   const data=await res.json();
   if(data.status!==1)return null;
   const p=data.product,n=p.nutriments||{};
-  const per100=Object.assign(emptyN(),{
-    calories:+n['energy-kcal_100g']||0, protein:+n['proteins_100g']||0, fat:+n['fat_100g']||0,
-    saturatedFat:+n['saturated-fat_100g']||0, carbohydrates:+n['carbohydrates_100g']||0,
-    sugar:+n['sugars_100g']||0, fiber:+n['fiber_100g']||0, sodium:(+n['sodium_100g']||0)*1000,
-    transFat:+n['trans-fat_100g']||0, cholesterol:(+n['cholesterol_100g']||0)*1000,
-    potassium:(+n['potassium_100g']||0)*1000, calcium:(+n['calcium_100g']||0)*1000,
-    iron:(+n['iron_100g']||0)*1000, caffeine:(+n['caffeine_100g']||0)*1000,
-    alcohol:+n['alcohol_100g']||0
-  });
-  per100.netCarbs=Math.max(0,per100.carbohydrates-per100.fiber);
-  const servings=[{grams:100,label:'100 g'},{grams:1,label:'1 g'},{grams:28.35,label:'1 oz'}];
-  /* OFF serving_size is free text like "1 tray (340 g)" — take serving_quantity
-     (numeric grams) when present, else extract the gram figure, never the leading count. */
+  /* serving grams first — needed to convert per-serving values to per-100g */
   let sg=parseFloat(p.serving_quantity);
   if(isNaN(sg)||sg<=0){
     const m=/([\d.]+)\s*(g|ml)\b/i.exec(p.serving_size||'');
     if(m)sg=parseFloat(m[1]);
   }
+  /* Many OFF records only carry per-serving numbers (or _100g is absent):
+     prefer _100g, else convert _serving via serving grams. */
+  const off=(k,mult)=>{
+    mult=mult||1;
+    const v100=parseFloat(n[k+'_100g']);
+    if(!isNaN(v100))return v100*mult;
+    const vs=parseFloat(n[k+'_serving']);
+    if(!isNaN(vs)&&sg>0)return vs*100/sg*mult;
+    return 0;
+  };
+  let kcal=off('energy-kcal');
+  if(!kcal){const kj=off('energy');if(kj)kcal=kj/4.184}
+  const per100=Object.assign(emptyN(),{
+    calories:kcal, protein:off('proteins'), fat:off('fat'),
+    saturatedFat:off('saturated-fat'), carbohydrates:off('carbohydrates'),
+    sugar:off('sugars'), fiber:off('fiber'), sodium:off('sodium',1000),
+    transFat:off('trans-fat'), cholesterol:off('cholesterol',1000),
+    potassium:off('potassium',1000), calcium:off('calcium',1000),
+    iron:off('iron',1000), caffeine:off('caffeine',1000),
+    alcohol:off('alcohol')
+  });
+  if(!per100.calories)per100.calories=per100.protein*4+per100.carbohydrates*4+per100.fat*9;
+  per100.netCarbs=Math.max(0,per100.carbohydrates-per100.fiber);
+  const servings=[{grams:100,label:'100 g'},{grams:1,label:'1 g'},{grams:28.35,label:'1 oz'}];
   if(sg>1)servings.unshift({grams:sg,label:'1 serving ('+(p.serving_size||fmtAmt(sg)+' g')+')'});
   return {name:p.product_name||('Product '+barcode),brand:p.brands||'',source:'off',fdcId:null,nutrientsPer100g:per100,servings};
 }
@@ -1188,7 +1200,7 @@ async function identifyFoodFromPhoto(base64Image,mimeType){
       model:'claude-sonnet-4-6',max_tokens:1000,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mimeType,data:base64Image}},
-        {type:'text',text:'Analyze this food image. Return ONLY valid JSON (no markdown, no explanation) with this exact structure:\n{"items": [{"name": "string (specific food name for USDA database search)", "estimatedGrams": number, "confidence": "high"|"medium"|"low", "notes": "optional string"}]}'}
+        {type:'text',text:'Analyze this food image. Two cases.\nCASE 1 - the image shows a printed NUTRITION FACTS label/panel (can, bottle, package): READ the printed values exactly, do not estimate. Return ONLY: {"kind":"label","name":"product name if visible else short description","servingGrams":number or null (serving size in g or ml if printed),"perServing":{"calories":number,"protein":number,"carbohydrates":number,"fat":number,"saturatedFat":number,"sugar":number,"fiber":number,"sodium":number_mg}} - omit fields not printed.\nCASE 2 - the image shows actual food/a dish: identify each component with realistic gram estimates. Return ONLY: {"kind":"dish","items":[{"name":"simple food name suited to USDA search","estimatedGrams":number,"confidence":"high"|"medium"|"low"}]}\nReturn ONLY valid JSON, no markdown.'}
       ]}]
     })
   });
@@ -2093,13 +2105,28 @@ function aiErrorHtml(err){
   if(String(err.message).includes('NO_KEY'))return '<div class="muted">USDA key required to match foods. Add it in Settings.</div>';
   return '<div class="muted" style="color:var(--danger)">Analysis failed: '+esc(err.message||err)+'</div>';
 }
+function pendingFromLabel(r){
+  const per=Object.assign(emptyN(),r.perServing||{});
+  per.netCarbs=Math.max(0,(per.carbohydrates||0)-(per.fiber||0));
+  const grams=+r.servingGrams>0?+r.servingGrams:100;
+  const per100=scaleN(per,100/grams);
+  return {name:r.name||'Labelled product',brand:'',source:'label',fdcId:null,
+    nutrientsPer100g:per100,
+    servings:[{grams:grams,label:'1 serving — values read from label'+(+r.servingGrams>0?' ('+fmtAmt(grams)+' g)':'')},{grams:100,label:'100 g'},{grams:1,label:'1 g'}]};
+}
 async function analyzePhoto(ov,dataUrl,mime){
-  const out=ov.querySelector('#photoOut');
+  let out=ov.querySelector('#photoOut');
+  if(!out){const host=ov.querySelector('#photoStage')||ov.querySelector('#addBody');if(!host)return;host.insertAdjacentHTML('beforeend','<div id="photoOut" style="margin-top:12px"></div>');out=ov.querySelector('#photoOut')}
   out.innerHTML='<div class="skel"></div><div class="skel"></div>';
   const base64=dataUrl.split(',')[1];
   try{
     const result=await identifyFoodFromPhoto(base64,mime);
-    showAiItems(ov,out,result.items||[]);
+    if(result.kind==='label'&&result.perServing){
+      toast('Nutrition label read — values taken exactly as printed','success');
+      showServingSelector(ov,pendingFromLabel(result),{onBack:()=>renderPhotoTab(ov)});
+    }else{
+      showAiItems(ov,out,result.items||[]);
+    }
   }catch(err){out.innerHTML=aiErrorHtml(err)}
 }
 async function identifyFoodFromText(text){
