@@ -434,8 +434,8 @@ html[data-theme="light"] .dtype-card input{background:#FFFFFF;border:1px solid v
 .mtr1,.mtr2{display:flex;gap:8px;align-items:center}
 .mtr1 [data-mtname]{flex:1;min-width:0}
 .mtr1 input[type=color]{flex:0 0 36px;width:36px;height:34px;padding:2px;border-radius:8px}
-.mtr2 input[type=time]{flex:0 1 110px;width:auto;min-width:0}
-.mtr2 [data-mtshare]{flex:0 0 58px;width:58px;text-align:center}
+.mtr2 input[type=time]{flex:1 1 0;width:auto;min-width:0;max-width:130px}
+.mtr2 [data-mtshare]{flex:0 0 54px;width:54px;text-align:center}
 /* meal picker chips in Add Food modal */
 .mealpick{display:flex;gap:6px;padding:10px 18px 0;flex-wrap:wrap}
 .mp{padding:6px 13px;border-radius:var(--radius-full);font-size:12px;font-weight:var(--fw-semibold);background:var(--bg-base);color:var(--text-secondary);border:1px solid var(--border);transition:all var(--transition)}
@@ -2654,7 +2654,7 @@ async function renderSettings(){
           <input type="time" value="${esc(m.end||'23:59')}" data-mtend aria-label="End time">
           <span style="flex:1"></span>
           <input type="number" min="0" max="100" value="${mealShare(m)}" data-mtshare aria-label="${esc(m.name)} calorie share percent">
-          <span class="tiny">% of day</span>
+          <span class="tiny">%</span>
         </div>
       </div>`).join('')}</div>
     <div style="display:flex;gap:10px;margin-top:10px">
