@@ -416,6 +416,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 /* floating tab bar: active item gets a soft pill, like GitHub mobile */
 #bottomnav .nav-item,#bottomnav .nav-item:hover{background:transparent}
 #bottomnav .nav-item.active{color:var(--accent);background:var(--accent-dim)}
+.nav-plus{flex:0 0 48px;width:48px;height:48px;margin-left:4px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;align-self:center;box-shadow:var(--glow-accent);transition:transform var(--transition)}
+.nav-plus:active{transform:scale(0.94)}
+.nav-plus svg{width:24px;height:24px}
 /* stable water layout: pills row, text always on its own row */
 .water-row{flex-wrap:wrap}
 .water-txt{flex-basis:100%;margin-left:0;margin-top:10px;text-align:left;display:flex;align-items:baseline;gap:10px}
@@ -470,8 +473,7 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
   .mbars{flex:1;flex-basis:auto;min-width:0;flex-direction:column;gap:10px}
   .mbar{flex:none;width:100%;min-width:0}
   /* FAB sits bottom-right, clear of meal headers / "+ Add" buttons */
-  #fab{right:16px;left:auto;transform:none;bottom:calc(var(--bottomnav-h) + 30px + env(safe-area-inset-bottom,0px))}
-  #fab:hover{transform:scale(1.08)}
+  #fab{display:none !important}
   .overlay{align-items:flex-end}
   .modal{width:100%;max-height:92vh;border-radius:var(--radius-lg) var(--radius-lg) 0 0;transform:translateY(40px)}
   .modal.tall{min-height:88vh}
@@ -510,7 +512,7 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
 <script>
 /*JS-START*/
 'use strict';
-const APP_VERSION='2.6.0';
+const APP_VERSION='3.0.0';
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
@@ -632,11 +634,9 @@ const DEFAULT_MEAL_TYPES=[
 ];
 const NAV=[
  {v:'today',icon:'utensils',label:'Today'},
- {v:'insights',icon:'bar-chart-2',label:'Insights'},
- {v:'library',icon:'book-open',label:'Library'},
- {v:'progress',icon:'trending-up',label:'Progress'},
- {v:'settings',icon:'settings',label:'Settings'}
+ {v:'trends',icon:'trending-up',label:'Trends'}
 ];
+const NAV_DESK=[...NAV,{v:'settings',icon:'settings',label:'Settings'}];
 const MET={strength:5,hiit:8,cardio:7,sport:6,other:4};
 const SUGGEST_FOODS={
  protein:['Chicken breast','Greek yogurt','Whey protein'],fiber:['Lentils','Chia seeds','Raspberries'],
@@ -1111,25 +1111,37 @@ function makeChart(id,cfg){
 }
 function destroyCharts(){Object.values(S.charts).forEach(c=>{try{c.destroy()}catch(e){}});S.charts={}}
 async function setView(v){
+  if(v==='insights'){v='trends';S.trendsTab='nutrition'}
+  if(v==='progress'){v='trends';S.trendsTab='body'}
   S.view=v;destroyCharts();
   $$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
-  $('#fab').style.display=(v==='today'||v==='library')?'flex':'none';
+  $('#fab').style.display=(v==='today')?'flex':'none';
   const m=$('#main');m.scrollTop=0;
   try{
     if(v==='today')await renderToday();
-    else if(v==='insights')await renderInsights();
-    else if(v==='library')await renderLibrary();
-    else if(v==='progress')await renderProgress();
+    else if(v==='trends'){if(S.trendsTab==='body')await renderProgress();else await renderInsights()}
     else if(v==='settings')await renderSettings();
+    else await renderToday();
   }catch(err){
     $('#content').innerHTML='<div class="card"><p class="muted">Something went wrong rendering this view: '+esc(err.message||err)+'</p></div>';
   }
   icons();
 }
+function navItemHtml(n){return '<button class="nav-item'+(n.v===S.view?' active':'')+'" data-view="'+n.v+'" aria-label="'+n.label+'"><i data-lucide="'+n.icon+'"></i><span>'+n.label+'</span></button>'}
 function buildNavs(){
-  const html=NAV.map(n=>'<button class="nav-item'+(n.v===S.view?' active':'')+'" data-view="'+n.v+'" aria-label="'+n.label+'"><i data-lucide="'+n.icon+'"></i><span>'+n.label+'</span></button>').join('');
-  $('#sidenav').innerHTML=html;$('#bottomnav').innerHTML=html;
+  $('#sidenav').innerHTML=NAV_DESK.map(navItemHtml).join('');
+  $('#bottomnav').innerHTML=NAV.map(navItemHtml).join('')+'<button class="nav-plus" id="navPlus" aria-label="Add food"><i data-lucide="plus"></i></button>';
   $$('.nav-item').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+  const np=$('#navPlus');if(np)np.addEventListener('click',()=>openAddModal());
+}
+function trendsSegHtml(){
+  return `<div class="seg" style="max-width:300px;margin-bottom:14px" id="trendsSeg">
+    <button data-tt="nutrition" class="${S.trendsTab!=='body'?'active':''}">Nutrition</button>
+    <button data-tt="body" class="${S.trendsTab==='body'?'active':''}">Body</button>
+  </div>`;
+}
+function wireTrendsSeg(){
+  $$('#trendsSeg button').forEach(b=>b.addEventListener('click',()=>{S.trendsTab=b.dataset.tt;setView('trends')}));
 }
 
 /* ============================================================
@@ -1230,7 +1242,8 @@ async function renderToday(){
     const me=entries.filter(e=>e.mealType===m.id).sort((a,b)=>a.timestamp-b.timestamp);
     const mcal=me.reduce((s,e)=>s+(+e.nutrients?.calories||0),0);
     const aim=Math.round(calTarget*mealShare(m)/100);
-    const open=S.expandedMeals[m.id]!==false;
+    /* default: open when it has entries, collapsed when empty; manual toggles win */
+    const open=(m.id in S.expandedMeals)?S.expandedMeals[m.id]:me.length>0;
     const rows=me.map(e=>entryRowHtml(e)).join('');
     const emptyHtml=`<div class="empty-meal">
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="24" cy="24" r="16"/><path d="M18 24h12M24 18v12" stroke-linecap="round"/></svg>
@@ -1625,12 +1638,45 @@ async function renderSearchHome(ov){
     seen.add(e.foodName);rec.push(e);
     if(rec.length>=6)break;
   }
-  let html='';
+  let html=`<div class="qstats" style="margin-bottom:12px">
+    <button class="qchip" data-lp="fav"><i data-lucide="star" style="width:13px;height:13px"></i> Favorites</button>
+    <button class="qchip" data-lp="custom"><i data-lucide="package" style="width:13px;height:13px"></i> My Foods</button>
+    <button class="qchip" data-lp="meals"><i data-lucide="chef-hat" style="width:13px;height:13px"></i> Meals</button>
+    <button class="qchip" data-lp="weight"><i data-lucide="scale" style="width:13px;height:13px"></i> Log weight</button>
+    <button class="qchip" data-lp="workout"><i data-lucide="dumbbell" style="width:13px;height:13px"></i> Log workout</button>
+  </div><div id="libPane"></div>`;
   if(freq.length)html+='<div class="res-group"><div class="rg-title">Most Logged</div>'+freq.map(([name,v],i)=>`<div data-fq="${i}">${resRow(name,v.n+'× logged · '+(v.e.servingLabel||''),v.e.nutrients?.calories||0,'Frequent','custom')}</div>`).join('')+'</div>';
   if(rec.length)html+='<div class="res-group"><div class="rg-title">Recent</div>'+rec.map((r,i)=>`<div data-rc="${i}">${resRow(r.foodName,r.servingLabel||'',r.nutrients?.calories||0,'Recent','recent')}</div>`).join('')+'</div>';
-  wrap.innerHTML=html||'<div class="muted" style="padding:8px 2px">Start typing to search your library, recents, and USDA FoodData Central.</div>';
+  if(!freq.length&&!rec.length)html+='<div class="muted" style="padding:8px 2px">Start typing to search your library, recents, and USDA FoodData Central.</div>';
+  wrap.innerHTML=html;
+  icons();
   wrap.querySelectorAll('[data-fq]').forEach(el=>el.addEventListener('click',()=>showServingSelector(ov,pendingFromEntry(freq[+el.dataset.fq][1].e))));
   wrap.querySelectorAll('[data-rc]').forEach(el=>el.addEventListener('click',()=>showServingSelector(ov,pendingFromEntry(rec[+el.dataset.rc]))));
+  wrap.querySelectorAll('[data-lp]').forEach(b=>b.addEventListener('click',()=>renderLibPane(ov,b.dataset.lp)));
+}
+async function renderLibPane(ov,kind){
+  if(kind==='weight'){weightModal();return}
+  if(kind==='workout'){workoutModal();return}
+  const pane=ov.querySelector('#libPane');if(!pane)return;
+  if(S.addPane===kind){S.addPane=null;pane.innerHTML='';return}
+  S.addPane=kind;
+  if(kind==='fav'){
+    const favs=(await dbAll('customFoods')).filter(c=>c.isFavorite);
+    pane.innerHTML='<div class="res-group"><div class="rg-title">Favorites</div>'+(favs.length?favs.map((c,i)=>`<div data-pf="${i}">${resRow(c.name,(c.brand||c.source)+' · per 100g',c.nutrientsPer100g?.calories||0,'Fav','custom')}</div>`).join(''):'<div class="muted" style="padding:6px 2px">No favorites yet — star foods from the log.</div>')+'</div>';
+    pane.querySelectorAll('[data-pf]').forEach(el=>el.addEventListener('click',()=>showServingSelector(ov,pendingFromCustom(favs[+el.dataset.pf]))));
+  }else if(kind==='custom'){
+    const cs=(await dbAll('customFoods')).filter(c=>c.source==='custom');
+    pane.innerHTML='<div class="res-group"><div class="rg-title">My Foods</div>'+(cs.length?cs.map((c,i)=>`<div data-pc="${i}">${resRow(c.name,(c.brand||'custom')+' · per 100g',c.nutrientsPer100g?.calories||0,'Custom','custom')}</div>`).join(''):'<div class="muted" style="padding:6px 2px">No custom foods yet.</div>')+'</div><button class="btn sm" id="paneNewFood" style="margin-bottom:10px"><i data-lucide="plus"></i> Create custom food</button>';
+    icons();
+    pane.querySelectorAll('[data-pc]').forEach(el=>el.addEventListener('click',()=>showServingSelector(ov,pendingFromCustom(cs[+el.dataset.pc]))));
+    pane.querySelector('#paneNewFood').addEventListener('click',()=>customFoodForm());
+  }else if(kind==='meals'){
+    const ms=await dbAll('meals');
+    pane.innerHTML='<div class="res-group"><div class="rg-title">Meals</div>'+(ms.length?ms.map((m,i)=>`<div data-pm="${i}">${resRow(m.name,m.ingredients.length+' ingredients · per serving',m.perServingNutrients?.calories||0,'Meal','off')}</div>`).join(''):'<div class="muted" style="padding:6px 2px">No saved meals yet.</div>')+'</div><button class="btn sm" id="paneNewMeal" style="margin-bottom:10px"><i data-lucide="plus"></i> Create meal</button>';
+    icons();
+    pane.querySelectorAll('[data-pm]').forEach(el=>el.addEventListener('click',()=>logMealQuick(ms[+el.dataset.pm])));
+    pane.querySelector('#paneNewMeal').addEventListener('click',()=>mealBuilder());
+  }
 }
 async function localMatches(q){
   const ql=q.toLowerCase();
@@ -2039,7 +2085,8 @@ async function renderInsights(){
   };
 
   $('#content').innerHTML=`
-  ${pageHead('Insights','Last '+period+' days')}
+  ${pageHead('Trends','Nutrition · last '+period+' days')}
+  ${trendsSegHtml()}
   <div class="period-sel seg" style="max-width:300px">
     ${[[7,'Week'],[30,'Month'],[90,'90 Days']].map(([p,l])=>`<button data-p="${p}" class="${p===period?'active':''}" aria-label="${l} period">${l}</button>`).join('')}
   </div>
@@ -2080,6 +2127,7 @@ async function renderInsights(){
     :'<p class="muted">Nothing logged in this period yet.</p>'}
   </div>`;
   icons();
+  wireTrendsSeg();
 
   $$('#content .period-sel button').forEach(b=>b.addEventListener('click',()=>{S.period=+b.dataset.p;renderInsights()}));
   $$('#macroModeSeg button').forEach(b=>b.addEventListener('click',()=>{S.insMode=b.dataset.m;renderInsights()}));
@@ -2463,7 +2511,8 @@ async function renderProgress(){
 
   const typeIcons={strength:'dumbbell',hiit:'zap',cardio:'heart-pulse',sport:'volleyball',other:'activity'};
   $('#content').innerHTML=`
-  ${pageHead('Progress',new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'}))}
+  ${pageHead('Trends','Body · '+new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'}))}
+  ${trendsSegHtml()}
   <div class="card">
     <div class="sec-title"><i data-lucide="scale"></i> Body Weight <button class="btn sm primary" id="logWeight" style="margin-left:auto"><i data-lucide="plus"></i> Log Weight</button></div>
     ${weights.length?`<div class="chart-box"><canvas id="weightChart" role="img" aria-label="Weight trend"></canvas></div>
@@ -2481,6 +2530,7 @@ async function renderProgress(){
   </div>
   `;
   icons();
+  wireTrendsSeg();
 
   $('#logWeight').addEventListener('click',()=>weightModal());
   $('#logWorkout').addEventListener('click',()=>workoutModal());
