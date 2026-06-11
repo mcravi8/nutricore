@@ -508,7 +508,7 @@ html[data-theme="light"] .mp.active{background:var(--c);color:#fff}
 <script>
 /*JS-START*/
 'use strict';
-const APP_VERSION='2.4.2';
+const APP_VERSION='2.5.0';
 /* ============================================================
    THEME (dark / light) — applied before render to avoid a flash
 ============================================================ */
@@ -851,16 +851,29 @@ function calcTargetCals(p){
   return tdee;
 }
 function defaultDayTargets(p){
+  /* Model: the activity multiplier already averages weekly exercise into the base
+     target, so day types only REDISTRIBUTE calories across the week — they never
+     stack on top of logged workouts. Session assumptions (weight-scaled, editable):
+     training ≈ 60 min lifting; cardio day ≈ 60 min steady cardio;
+     training+cardio ≈ lifting + 30 min light spin. */
   const base=Math.round(calcTargetCals(p));
-  const prot=Math.round((+p.weightKg||75)*2);
-  const mk=mult=>{
-    const cals=Math.round(base*mult);
+  const w=+p.weightKg||75;
+  const prot=Math.round(w*2);
+  const lift=Math.round(5*3.5*w/200*60);      /* ~60 min strength */
+  const spin=Math.round(5.5*3.5*w/200*30);    /* ~30 min light spin */
+  const cardio60=Math.round(6.5*3.5*w/200*60);/* ~60 min steady cardio */
+  const mk=cals=>{
+    cals=Math.round(cals);
     const fat=Math.round(cals*0.25/9);
     const carbs=Math.max(0,Math.round((cals-prot*4-fat*9)/4));
     return {calories:cals,protein:prot,carbs:carbs,fat:fat};
   };
-  /* Rest days eat below baseline; training/cardio days scale up — all editable in Settings. */
-  return {rest:mk(0.93),training:mk(1.05),cardio:mk(1.0),both:mk(1.10)};
+  return {
+    rest:mk(base-lift*0.85),          /* below-average day: no session */
+    training:mk(base),                /* ≈ the weekly average day */
+    cardio:mk(base+(cardio60-lift)),  /* slightly above training */
+    both:mk(base+spin)                /* training + light spin on top */
+  };
 }
 function dayTypeFor(date){
   if(settings.dayOverrides&&settings.dayOverrides[date])return settings.dayOverrides[date];
@@ -1186,7 +1199,7 @@ async function renderToday(){
   if(isToday){try{todayWeight=await dbGet('weightLog',S.date)}catch(e){}}
   const showWeigh=isToday&&new Date().getDay()===1&&!todayWeight&&settings.weighDismissedWeek!==weekKey(S.date);
   const mt=macroTargetsFor(S.date);
-  const burn=settings.workoutAdjust===false?0:await workoutBurn(S.date);
+  const burn=settings.workoutAdjust===true?await workoutBurn(S.date):0;
   const calTarget=(+mt.calories||0)+burn;
   const remaining=Math.round(calTarget-totals.calories);
   const over=remaining<0;
@@ -2488,7 +2501,7 @@ function workoutModal(){
         <div class="fcol"><label>Calories burned</label><input type="number" id="wkCal" min="0" placeholder="auto-estimated"></div>
       </div>
       <div class="fcol"><label>Notes (optional)</label><input id="wkNotes" placeholder="e.g. push day, 5x5"></div>
-      <p class="tiny" style="margin-top:10px">Leave calories blank to estimate from type, duration, and your body weight (MET-based). Logging a workout for today raises today’s calorie target.</p>
+      <p class="tiny" style="margin-top:10px">Leave calories blank to estimate from type, duration, and your body weight (MET-based). By default logging is record-keeping only — your day type already budgets the planned session. It raises today’s target only if you enabled the workout adjustment in Settings → Profile.</p>
     </div>
     <div class="modal-foot"><button class="btn primary full" id="wkSave">Save</button></div>`);
   const est=()=>{
@@ -2509,7 +2522,8 @@ function workoutModal(){
       type:ov.querySelector('#wkType').value,durationMin:dur,
       caloriesBurned:cal,notes:ov.querySelector('#wkNotes').value.trim()
     });
-    closeModal();toast('Workout logged (+'+fmtN(cal)+' cal target adjustment)','success');
+    closeModal();
+    toast(settings.workoutAdjust===true?'Workout logged (+'+fmtN(cal)+' cal target adjustment)':'Workout logged ('+fmtN(cal)+' cal, record only)','success');
     if(S.view==='progress')renderProgress();
     if(S.view==='today')renderToday();
   });
@@ -2579,8 +2593,8 @@ async function renderSettings(){
         ${[0.25,0.5,0.75,1.0].map(r=>`<option value="${r}" ${+p.weeklyRate===r?'selected':''}>${r} kg/week</option>`).join('')}</select></div>
     </div>
     <label style="display:flex;gap:10px;align-items:flex-start;margin:10px 0 2px;font-size:var(--font-sm);cursor:pointer">
-      <input type="checkbox" id="pWAdj" style="width:auto;margin-top:2px" ${settings.workoutAdjust===false?'':'checked'}>
-      <span>Add logged workout calories to that day's target<br><span class="tiny">Turn OFF if your Activity Level already covers your training — otherwise exercise gets counted twice.</span></span>
+      <input type="checkbox" id="pWAdj" style="width:auto;margin-top:2px" ${settings.workoutAdjust===true?'checked':''}>
+      <span>Add logged workout calories to that day's target<br><span class="tiny">OFF by default: your day types (Rest / Training / Cardio / Training + Cardio) already budget for the planned session, so logging a workout is just record-keeping. Turn ON only if you set Activity Level to Sedentary/Light and want each logged workout to add its burn instead.</span></span>
     </label>
     <div class="card" style="margin:8px 0 0;padding:12px;background:var(--bg-base)" id="tdeeOut"></div>
     <button class="btn primary" id="pSave" style="margin-top:12px"><i data-lucide="check"></i> Save Profile &amp; Recalculate</button>
@@ -2608,7 +2622,10 @@ async function renderSettings(){
         <div class="consist" data-consist></div></div>`;
     }).join('')}
     </div>
-    <button class="btn primary" id="schedSave"><i data-lucide="check"></i> Save Schedule &amp; Targets</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" id="schedSave"><i data-lucide="check"></i> Save Schedule &amp; Targets</button>
+      <button class="btn" id="schedRecalc"><i data-lucide="refresh-cw"></i> Recalculate from profile</button>
+    </div>
   </div>
 
   <div class="card">
@@ -2759,6 +2776,13 @@ async function renderSettings(){
     });
     targetsByType=nt;saveTargets();saveSettings();updateTopbar();
     toast('Schedule and targets saved','success');
+  });
+  $('#schedRecalc').addEventListener('click',async()=>{
+    if(!profile||!profile.weightKg){toast('Save your profile first','error');return}
+    if(await confirmDialog('Replace all four day-type targets with fresh values computed from your profile? Manual edits will be overwritten.',{confirmText:'Recalculate'})){
+      targetsByType=defaultDayTargets(profile);saveTargets();
+      renderSettings();toast('Targets recalculated from profile','success');
+    }
   });
 
   /* nutrient targets */
